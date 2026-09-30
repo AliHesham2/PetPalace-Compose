@@ -1,0 +1,132 @@
+package com.alagamb.petcompose.ui.nav
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.alagamb.petcompose.ui.screens.addpet.AddPetRoute
+import com.alagamb.petcompose.ui.screens.main.MainRoute
+import com.alagamb.petcompose.ui.screens.products.productdetails.ProductDetailsRoute
+import com.alagamb.petcompose.ui.screens.products.productlist.ProductListRoute
+import com.alagamb.petcompose.ui.screens.registration.LandRoute
+import com.alagamb.petcompose.ui.screens.registration.LoginRoute
+import com.alagamb.petcompose.ui.screens.registration.RegisterRoute
+import com.alagamb.petcompose.ui.screens.registration.RegistrationViewModel
+import com.alagamb.petcompose.ui.screens.requests.RequestsRoute
+import com.alagamb.petcompose.util.sharedViewModel
+import kotlinx.coroutines.CoroutineScope
+
+@Composable
+fun AppNavGraph(
+    modifier       : Modifier          = Modifier,
+    navController  : NavHostController = rememberNavController(),
+    coroutineScope : CoroutineScope    = rememberCoroutineScope(),
+    startDestination: String           = AppRoute.AUTH_GRAPH,
+    navActions     : AppNavigation     = remember(navController) { AppNavigation(navController) }
+){
+
+    NavHost(
+        navController    = navController,
+        startDestination = startDestination,
+        modifier         = modifier,
+    ){
+        // ── Auth Sub-Graph (Shares RegistrationViewModel) ─────
+        navigation(
+            startDestination = AppRoute.LAND_ROUTE,
+            route            = AppRoute.AUTH_GRAPH,
+        ){
+            composable(route = AppRoute.LAND_ROUTE){ backStackEntry ->
+                LandRoute(
+                    onClick = { isLogin ->
+                        if (isLogin) navActions.navToLoginScreen()
+                        else navActions.navToRegisterScreen()
+                    },
+                    modifier = modifier
+                )
+            }
+
+            composable(route = AppRoute.LOGIN_ROUTE){ backStackEntry ->
+                val authViewModel: RegistrationViewModel = backStackEntry.sharedViewModel(navController, AppRoute.AUTH_GRAPH)
+                LoginRoute(
+                    onBackClick = { navController.popBackStack() },
+                    onNavigateToDashboard = { navActions.navToMain() },
+                    onNavigateToRegister = { navActions.navToRegisterScreen() },
+                    modifier = modifier,
+                    viewModel = authViewModel
+                )
+            }
+
+            composable(route = AppRoute.REGISTER_ROUTE){ backStackEntry ->
+                val authViewModel: RegistrationViewModel = backStackEntry.sharedViewModel(navController, AppRoute.AUTH_GRAPH)
+                RegisterRoute(
+                    onBackClick = { navController.popBackStack() },
+                    onNavigateToDashboard = { navActions.navToMain() },
+                    onNavigateToLogin = { navActions.navToLoginScreen() },
+                    modifier = modifier,
+                    viewModel = authViewModel
+                )
+            }
+        }
+
+        // ── Main Destination (Hosts Dashboard & Profile with BottomBar) ─────
+        composable(route = AppRoute.MAIN_ROUTE) {
+            MainRoute(
+                onNavigateToRequests = { navActions.navToRequests() },
+                onNavigateToProductList = { title -> navActions.navToProductList(title) },
+                onNavigateToProductDetails = { productId -> navActions.navToProductDetails(productId) },
+                onNavigateToAddPet = { navActions.navToAddPet() },
+                modifier = modifier
+            )
+        }
+
+        // ── Requests Destination (Secondary screen with Back button, NO BottomBar) ─────
+        composable(route = AppRoute.REQUESTS_ROUTE) {
+            RequestsRoute(
+                onBackClick = { navController.popBackStack() },
+                modifier = modifier
+            )
+        }
+
+        // ── Product List Destination (Secondary screen with Back button, NO BottomBar) ─────
+        composable(
+            route = AppRoute.PRODUCT_LIST_ROUTE,
+            arguments = listOf(
+                navArgument(AppArgs.CATEGORY_TITLE) { type = NavType.StringType }
+            )
+        ) {
+            ProductListRoute(
+                onBackClick = { navController.popBackStack() },
+                modifier = modifier
+            )
+        }
+
+        // ── Product Details Destination (Secondary screen with Back button, NO BottomBar) ─────
+        composable(
+            route = AppRoute.PRODUCT_DETAILS_ROUTE,
+            arguments = listOf(
+                navArgument(AppArgs.PRODUCT_ID) { type = NavType.StringType }
+            )
+        ) {
+            ProductDetailsRoute(
+                onBackClick = { navController.popBackStack() },
+                modifier = modifier
+            )
+        }
+
+        // ── Add Pet Destination (Secondary screen with Back button, NO BottomBar) ─────
+        composable(route = AppRoute.ADD_PET_ROUTE) {
+            AddPetRoute(
+                onBackClick = { navController.popBackStack() },
+                modifier = modifier
+            )
+        }
+    }
+
+}

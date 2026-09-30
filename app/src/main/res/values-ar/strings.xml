@@ -1,0 +1,189 @@
+<resources>
+    <string name="app_name">بيتيفاي</string>
+    <!-- Landing / Onboarding -->
+    <string name="land_start">اعثر على رفيقك الأليف</string>
+    <string name="land_tagline">تبنَّ واعتنِ بالحيوانات الأليفة • آمن، موثوق، ومعتمد</string>
+    <string name="land_feature_verified">حيوانات موثقة</string>
+    <string name="land_feature_health">فحص بيطري معتمد</string>
+    <string name="land_feature_adoption">تبني مباشر وسهل</string>
+    <string name="land_get_started">ابدأ الآن</string>
+    <string name="land_login_button">لدي حساب بالفعل</string>
+    <string name="land_terms_note">بالمتابعة، أنت توافق على شروط الخدمة وسياسة الخصوصية</string>
+
+    <!-- Login -->
+    <string name="login_welcome">مرحباً بعودتك</string>
+    <string name="login_Button">تسجيل الدخول</string>
+    <string name="login_welcome_body">سجل دخولك لمتابعة رحلتك مع الحيوانات الأليفة</string>
+    <string name="auth_forgot_password">نسيت كلمة المرور؟</string>
+    <string name="auth_dont_have_account">ليس لديك حساب؟</string>
+    <string name="auth_action_sign_up">إنشاء حساب</string>
+
+    <!-- Register -->
+    <string name="register_welcome">إنشاء حساب جديد</string>
+    <string name="register_button">تسجيل</string>
+    <string name="register_welcome_body">انضم إلى مجتمع محبي الحيوانات الأليفة</string>
+    <string name="register_name">الاسم بالكامل</string>
+    <string name="register_name_hint">علي محمد</string>
+    <string name="auth_already_have_account">هل لديك حساب بالفعل؟</string>
+    <string name="auth_action_login">تسجيل الدخول</string>
+    <string name="auth_password_requirement">يجب ألا تقل عن 6 أحرف</string>
+
+    <!-- Register & Login-->
+    <string name="auth_email">البريد الإلكتروني</string>
+    <string name="auth_email_hint">you@example.com</string>
+    <string name="auth_password">كلمة المرور</string>
+    <string name="auth_password_hint">••••••••</string>
+
+    <!-- Validation & Auth Strings -->
+    <string name="error_username_empty">اسم المستخدم لا يمكن أن يكون فارغاً</string>
+    <string name="error_name_first_last">يرجى إدخال الاسم الأول واسم العائلة</string>
+    <string name="error_email_empty">البريد الإلكتروني لا يمكن أن يكون فارغاً</string>
+    <string name="error_invalid_email">يرجى إدخال بريد إلكتروني صالح</string>
+    <string name="error_password_too_short">يجب أن تكون كلمة المرور 6 أحرف على الأقل</string>
+    <string name="error_password_more_than_8">يجب أن تكون كلمة المرور أكثر من 8 أحرف</string>
+    <string name="error_passwords_not_match">كلمتا المرور غير متطابقتين</string>
+    <string name="error_identifier_empty">يرجى إدخال البريد الإلكتروني أو اسم المستخدم</string>
+    <string name="error_password_empty">يرجى إدخال كلمة المرور</string>
+    <string name="error_email_already_registered">البريد الإلكتروني مسجل بالفعل</string>
+    <string name="error_username_already_taken">اسم المستخدم محجوز بالفعل</string>
+    <string name="error_user_not_found">المستخدم غير موجود</string>
+    <string name="error_incorrect_password">كلمة المرور غير صحيحة</string>
+    <string name="error_network">تحقق من اتصالك بالإنترنت</string>
+    <string name="error_unknown">حدث خطأ غير متوقع</string>
+    <string name="success_registration">تم إنشاء الحساب بنجاح!</string>
+    <string name="success_login">أهلاً بك مجدداً!</string>
+
+    <!-- Product List -->
+    <string name="product_list_default_title">الحيوانات</string>
+    <string name="search_placeholder">البحث في %1$s…</string>
+    <string name="cd_clear">مسح</string>
+    <string name="tag_all">الكل</string>
+    <string name="items_available_count">%1$d حيوان متاح</string>
+    <string name="no_products_found_title">لم يتم العثور على حيوانات</string>
+    <string name="no_products_found_subtitle">حاول تعديل كلمات البحث أو الفلاتر المختارة.</string>
+    <string name="failed_to_load_more">تعذر تحميل المزيد من العناصر</string>
+    <string name="action_retry">إعادة المحاولة</string>
+    <string name="cd_favorite">المفضلة</string>
+    <string name="review_count_format">(%1$d)</string>
+
+    <!-- Product Details -->
+    <string name="product_details_title">تفاصيل الحيوان</string>
+    <string name="product_not_found_title">الحيوان غير موجود</string>
+    <string name="product_not_found_subtitle">العنصر الذي تبحث عنه غير متاح حالياً.</string>
+    <string name="action_go_back">رجوع</string>
+    <string name="verified_reviews_count">(%1$d تقييم موثق)</string>
+    <string name="section_description">الوصف</string>
+    <string name="section_highlights">أبرز المميزات</string>
+    <string name="perk_shipping_title">توصيل مجاني</string>
+    <string name="perk_shipping_subtitle">للطلبات فوق $25</string>
+    <string name="perk_safety_title">فحص بيطري</string>
+    <string name="perk_safety_subtitle">معتمد طبياً</string>
+    <string name="perk_returns_title">ضمان 30 يوم</string>
+    <string name="perk_returns_subtitle">مرونة كاملة</string>
+    <string name="cd_decrease_quantity">تقليل العدد</string>
+    <string name="cd_increase_quantity">زيادة العدد</string>
+    <string name="sending_request">جارٍ إرسال الطلب…</string>
+    <string name="request_sent">تم إرسال الطلب ✓</string>
+    <string name="send_request_with_price">إرسال الطلب • %1$s</string>
+    <string name="request_sent_success">تم إرسال طلب التبني لـ %1$s! 🐾</string>
+    <string name="request_failed">فشل إرسال الطلب</string>
+
+    <!-- Requests Screen -->
+    <string name="requests_title">طلبات التبني</string>
+    <string name="no_requests_title">لا توجد طلبات بعد</string>
+    <string name="no_requests_subtitle">لم تقم بإرسال أي طلبات تبني بعد. تصفح الحيوانات المتاحة واضغط \'إرسال الطلب\' للبدء!</string>
+    <string name="active_requests_count">%1$d طلب نشط</string>
+    <string name="cd_cancel_request">إلغاء الطلب</string>
+    <string name="request_quantity_format">العدد: %1$d</string>
+    <string name="status_pending">قيد الانتظار</string>
+    <string name="status_approved">تمت الموافقة</string>
+    <string name="request_cancelled">تم إلغاء الطلب</string>
+    <string name="requests_cleared">تم حذف جميع الطلبات</string>
+
+    <!-- Navigation & Common UI -->
+    <string name="nav_dashboard">الرئيسية</string>
+    <string name="nav_requests">الطلبات</string>
+    <string name="nav_profile">الملف الشخصي</string>
+    <string name="profile_screen_title">الملف الشخصي</string>
+    <string name="profile_placeholder">شاشة الملف الشخصي</string>
+    <string name="cd_back">رجوع</string>
+    <string name="cd_search">بحث</string>
+    <string name="cd_remove">حذف</string>
+    <string name="cd_menu">القائمة</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_search_placeholder">ابحث عن حيوانات، سلالات، أو ملاجئ…</string>
+    <string name="dashboard_featured_pets">حيوانات مميزة</string>
+    <string name="dashboard_see_all">عرض الكل</string>
+    <string name="dashboard_recent_searches">عمليات البحث الأخيرة</string>
+    <string name="dashboard_clear_all">مسح الكل</string>
+    <string name="dashboard_no_recent_searches">لا توجد عمليات بحث سابقة.\nابدأ بالبحث عن حيوان أليف لطيف! 🐾</string>
+    <string name="dashboard_search_results_count">النتائج (%1$d)</string>
+    <string name="dashboard_no_pets_found">لم يتم العثور على حيوانات تطابق \"%1$s\".</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_edit_avatar">تعديل الصورة</string>
+    <string name="profile_badge_member">عاشق للحيوانات • موثق</string>
+    <string name="profile_stat_requests">الطلبات</string>
+    <string name="profile_stat_favorites">المفضلة</string>
+    <string name="profile_stat_points">النقاط</string>
+    <string name="profile_section_appearance">المظهر والثيم</string>
+    <string name="profile_theme_mode">وضع السمة</string>
+    <string name="profile_theme_system">تلقائي (النظام)</string>
+    <string name="profile_theme_light">فاتح</string>
+    <string name="profile_theme_dark">داكن</string>
+    <string name="profile_section_language">اللغة</string>
+    <string name="profile_lang_en">English</string>
+    <string name="profile_lang_ar">العربية (Arabic)</string>
+    <string name="profile_section_activity">نشاطاتي</string>
+    <string name="profile_action_my_requests">طلبات التبني الخاصة بي</string>
+    <string name="profile_action_my_requests_desc">عرض حالة وتفاصيل طلباتك</string>
+    <string name="profile_action_saved_pets">المحفوظات والمفضلة</string>
+    <string name="profile_action_saved_pets_desc">الحيوانات التي نالت إعجابك</string>
+    <string name="profile_action_notifications">الإشعارات</string>
+    <string name="profile_action_notifications_desc">تنبيهات عند تحديث حالة الطلب</string>
+    <string name="profile_section_account">الحساب</string>
+    <string name="profile_action_about">عن تطبيق بيتيفاي</string>
+    <string name="profile_action_privacy">سياسة الخصوصية</string>
+    <string name="profile_action_logout">تسجيل الخروج</string>
+    <string name="profile_logout_confirm_title">تسجيل الخروج</string>
+    <string name="profile_logout_confirm_msg">هل أنت متأكد من رغبتك في تسجيل الخروج من بيتيفاي؟</string>
+    <string name="action_cancel">إلغاء</string>
+    <string name="action_confirm">تسجيل الخروج</string>
+    <string name="profile_version">الإصدار 1.0.0 • صُنع بـ ❤️ للحيوانات الأليفة</string>
+ 
+    <!-- Add Pet Screen -->
+    <string name="add_pet_title">إضافة أليف جديد</string>
+    <string name="add_pet_preview_title">معاينة مباشرة</string>
+    <string name="add_pet_preview_subtitle">هكذا ستظهر بطاقة الأليف للمتبنين</string>
+    <string name="add_pet_section_basic">المعلومات الأساسية</string>
+    <string name="add_pet_name_label">اسم الحيوان الأليف</string>
+    <string name="add_pet_name_hint">مثال: لونا، ماكس</string>
+    <string name="add_pet_category_label">الفئة</string>
+    <string name="add_pet_breed_label">السلالة / النوع</string>
+    <string name="add_pet_breed_hint">مثال: فرينش بولدوج، سيامي</string>
+    <string name="add_pet_age_label">العمر</string>
+    <string name="add_pet_age_hint">مثال: سنة ونصف، ٨ أشهر</string>
+    <string name="add_pet_gender_label">الجنس</string>
+    <string name="add_pet_gender_male">ذكر</string>
+    <string name="add_pet_gender_female">أنثى</string>
+    <string name="add_pet_section_adoption">تفاصيل التبني</string>
+    <string name="add_pet_price_label">رسوم التبني ($)</string>
+    <string name="add_pet_price_hint">مثال: 120</string>
+    <string name="add_pet_distance_label">الموقع / المسافة</string>
+    <string name="add_pet_distance_hint">مثال: يبعد ٢.٤ كم</string>
+    <string name="add_pet_tag_label">شارة التمييز</string>
+    <string name="add_pet_featured_label">إبراز في الشاشة الرئيسية</string>
+    <string name="add_pet_featured_desc">عرض هذا الأليف في قسم الحيوانات المميزة</string>
+    <string name="add_pet_section_about">الشخصية والوصف</string>
+    <string name="add_pet_description_label">الوصف التفصيلي</string>
+    <string name="add_pet_description_hint">شارك تفاصيل عن طباعه، عاداته، وسجل التطعيمات…</string>
+    <string name="add_pet_submit_button">نشر الحيوان الأليف</string>
+    <string name="add_pet_success">تمت إضافة الحيوان الأليف بنجاح! 🐾</string>
+    <string name="add_pet_error_name">يرجى إدخال اسم الحيوان الأليف</string>
+    <string name="add_pet_error_breed">يرجى إدخال السلالة</string>
+    <string name="add_pet_error_age">يرجى إدخال العمر</string>
+    <string name="add_pet_error_price">يرجى إدخال رسوم تبني صالحة</string>
+    <string name="add_pet_error_desc">يرجى تقديم وصف (١٠ أحرف على الأقل)</string>
+    <string name="dashboard_add_pet">إضافة أليف</string>
+</resources>

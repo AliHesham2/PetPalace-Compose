@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Toe 1 (Far Left) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M37.5,41.5m-5,0a5,5 0 1,1 10,0a5,5 0 1,1 -10,0" />
+
+    <!-- Toe 2 (Center Left) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M48.5,33.5m-5.8,0a5.8,5.8 0 1,1 11.6,0a5.8,5.8 0 1,1 -11.6,0" />
+
+    <!-- Toe 3 (Center Right) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M59.5,33.5m-5.8,0a5.8,5.8 0 1,1 11.6,0a5.8,5.8 0 1,1 -11.6,0" />
+
+    <!-- Toe 4 (Far Right) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M70.5,41.5m-5,0a5,5 0 1,1 10,0a5,5 0 1,1 -10,0" />
+
+    <!-- Main Palm Pad with Cutout Heart -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M54,49 C43.5,49 36,55.5 36,64 C36,70.5 41.5,76.5 48,76.5 C51,76.5 52.5,75 54,75 C55.5,75 57,76.5 60,76.5 C66.5,76.5 72,70.5 72,64 C72,55.5 64.5,49 54,49 Z M54,69 C54,69 46.5,64 46.5,59.8 C46.5,57.5 48.2,55.8 50.5,55.8 C52,55.8 53.3,56.8 54,58 C54.7,56.8 56,55.8 57.5,55.8 C59.8,55.8 61.5,57.5 61.5,59.8 C61.5,64 54,69 54,69 Z" />
+</vector>
