@@ -4,27 +4,20 @@ import com.alagamb.petcompose.ui.commonui.brand.AppLogo
 
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.background
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.window.core.layout.WindowSizeClass
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.HealthAndSafety
@@ -44,7 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -55,7 +47,7 @@ import com.alagamb.petcompose.R
 import com.alagamb.petcompose.ui.commonui.buttons.AppButton
 import com.alagamb.petcompose.ui.commonui.buttons.AppButtonStyles
 import com.alagamb.petcompose.ui.commonui.buttons.AppOutlinedButton
-import com.alagamb.petcompose.ui.commonui.customize.AppColors
+import com.alagamb.petcompose.ui.commonui.customize.AppModifier
 import com.alagamb.petcompose.ui.commonui.customize.AppShape
 import com.alagamb.petcompose.ui.theme.PetComposeTheme
 
@@ -94,35 +86,20 @@ fun LandScreen(
     val isWideScreen = windowAdaptiveInfo.windowSizeClass.isWidthAtLeastBreakpoint(
         WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND
     )
-
-    val maxCardWidth = when {
-        isTablet -> 440.dp
-        isWideScreen -> 460.dp
-        else -> 500.dp
-    }
+    val maxCardWidth = LandModifiers.calculateCardWidth(isTablet, isWideScreen)
 
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .statusBarsPadding()
-            .navigationBarsPadding(),
+        modifier = modifier.then(LandModifiers.root(MaterialTheme.colorScheme.background)),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
-            modifier = Modifier
-                .widthIn(max = maxCardWidth)
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .verticalScroll(scrollState),
+            modifier = LandModifiers.contentScroll(maxCardWidth, scrollState),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             // ── Top Language Switcher Bar ────────────────────────────
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp, bottom = 8.dp),
+                modifier = LandModifiers.topBarRow,
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -134,7 +111,7 @@ fun LandScreen(
                         .clickable { toggleLanguage() }
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                        modifier = LandModifiers.languageButtonPadding,
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
@@ -196,14 +173,14 @@ fun LandScreen(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    modifier = LandModifiers.subtitleText
                 )
 
                 Spacer(modifier = Modifier.height(28.dp))
 
                 // ── Highlight Feature Badges ─────────────────────────
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = LandModifiers.featureBadgesRow,
                     horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -224,9 +201,9 @@ fun LandScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // ── Call to Action Buttons ───────────────────────────────
+            // ── Call-to-Action Buttons ───────────────────────────────
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = LandModifiers.actionButtonsColumn,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
@@ -236,9 +213,7 @@ fun LandScreen(
                     style = AppButtonStyles.primary(),
                     shape = AppShape.Pill,
                     leadingIcon = Icons.Default.Pets,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp)
+                    modifier = LandModifiers.actionButton
                 )
 
                 AppOutlinedButton(
@@ -248,9 +223,7 @@ fun LandScreen(
                     colors = ButtonDefaults.outlinedButtonColors(
                         contentColor = MaterialTheme.colorScheme.primary
                     ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp)
+                    modifier = LandModifiers.actionButton
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -261,7 +234,7 @@ fun LandScreen(
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 16.dp, start = 12.dp, end = 12.dp)
+                    modifier = LandModifiers.termsNote
                 )
             }
         }
@@ -356,3 +329,8 @@ fun LandScreenTabletPreview() {
         LandScreen(onClick = {})
     }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LandModifiers — Centralized layout and styling tokens from AppModifier
+// ─────────────────────────────────────────────────────────────────────────────
+private typealias LandModifiers = AppModifier.Registration

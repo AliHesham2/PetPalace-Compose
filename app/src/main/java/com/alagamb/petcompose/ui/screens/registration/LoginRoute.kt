@@ -4,33 +4,26 @@ import com.alagamb.petcompose.ui.commonui.brand.AppLogo
 
 import android.widget.Toast
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.window.core.layout.WindowSizeClass
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,8 +34,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -54,7 +45,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alagamb.petcompose.R
 import com.alagamb.petcompose.ui.commonui.buttons.AppButtonStyles
 import com.alagamb.petcompose.ui.commonui.buttons.AppMorphingButton
-import com.alagamb.petcompose.ui.commonui.customize.AppColors
+import com.alagamb.petcompose.ui.commonui.customize.AppModifier
 import com.alagamb.petcompose.ui.commonui.customize.AppShape
 import com.alagamb.petcompose.ui.commonui.textfield.AppOutlinedTextField
 import com.alagamb.petcompose.ui.commonui.textfield.AppPasswordTextField
@@ -104,11 +95,11 @@ fun LoginRoute(
 
 @Composable
 fun LoginScreen(
+    modifier: Modifier = Modifier,
     state: RegistrationUiState,
     onBackClick: () -> Unit,
     onLoginClick: () -> Unit,
     onNavigateToRegister: () -> Unit = {},
-    modifier: Modifier = Modifier,
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo()
 ) {
     val emailStyle = when (state.loginEmailValidation.status) {
@@ -133,39 +124,25 @@ fun LoginScreen(
     val isWideScreen = windowAdaptiveInfo.windowSizeClass.isWidthAtLeastBreakpoint(
         WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND
     )
-
-    val maxCardWidth = when {
-        isTablet -> 440.dp
-        isWideScreen -> 460.dp
-        else -> 500.dp
-    }
+    val maxCardWidth = LoginModifiers.calculateCardWidth(isTablet, isWideScreen)
+    val scrollState = rememberScrollState()
 
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .statusBarsPadding()
-            .navigationBarsPadding(),
+        modifier = modifier.then(LoginModifiers.root(MaterialTheme.colorScheme.background)),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
-            modifier = Modifier
-                .widthIn(max = maxCardWidth)
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .verticalScroll(rememberScrollState())
+            modifier = LoginModifiers.contentScroll(maxCardWidth, scrollState)
         ) {
             // ── Top Navigation Bar ───────────────────────────────────
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp, bottom = 16.dp),
+                modifier = LoginModifiers.topNavRow,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Surface(
                     shape = CircleShape,
                     color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
-                    modifier = Modifier.size(42.dp)
+                    modifier = LoginModifiers.backButtonSurface
                 ) {
                     IconButton(onClick = onBackClick) {
                         Icon(
@@ -182,7 +159,7 @@ fun LoginScreen(
 
             // ── Hero Section ─────────────────────────────────────────
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = LoginModifiers.heroColumn,
                 horizontalAlignment = if (isWideScreen) Alignment.CenterHorizontally else Alignment.Start
             ) {
                 AppLogo(
@@ -239,9 +216,7 @@ fun LoginScreen(
 
             // Forgot Password Link
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp, bottom = 4.dp),
+                modifier = LoginModifiers.forgotPasswordRow,
                 horizontalArrangement = Arrangement.End
             ) {
                 Text(
@@ -257,12 +232,12 @@ fun LoginScreen(
             if (state.errorMessage != null) {
                 Spacer(modifier = Modifier.height(12.dp))
                 Surface(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = LoginModifiers.errorBanner,
                     shape = AppShape.Medium,
                     color = MaterialTheme.colorScheme.errorContainer
                 ) {
                     Row(
-                        modifier = Modifier.padding(14.dp),
+                        modifier = LoginModifiers.errorBannerRow,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
@@ -290,17 +265,14 @@ fun LoginScreen(
                 onClick = onLoginClick,
                 style = AppButtonStyles.primary(),
                 height = 52.dp,
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = LoginModifiers.submitButton
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             // ── Footer: Don't have an account? Sign Up ────────────────
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 24.dp),
+                modifier = LoginModifiers.footerRow,
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -435,3 +407,8 @@ fun LoginScreenTabletPreview() {
         )
     }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LoginModifiers — Centralized layout and styling tokens from AppModifier
+// ─────────────────────────────────────────────────────────────────────────────
+private typealias LoginModifiers = AppModifier.Registration

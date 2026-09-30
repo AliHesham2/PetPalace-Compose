@@ -78,6 +78,7 @@ import com.alagamb.petcompose.ui.commonui.buttons.AppIconButton
 import com.alagamb.petcompose.ui.commonui.buttons.AppTextButton
 import com.alagamb.petcompose.ui.commonui.cards.AppCard
 import com.alagamb.petcompose.ui.commonui.cards.AppElevatedCard
+import com.alagamb.petcompose.ui.commonui.customize.AppModifier
 import com.alagamb.petcompose.ui.commonui.customize.AppShape
 import com.alagamb.petcompose.ui.commonui.pager.AppHorizontalPager
 import com.alagamb.petcompose.ui.commonui.pager.AppPagerStyles
@@ -149,13 +150,13 @@ fun DashboardScreen(
         else -> 2
     }
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.then(DashboardModifiers.root)) {
 
         // Main Dashboard content
         LazyVerticalGrid(
             columns = GridCells.Fixed(columnCount),
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 28.dp),
+            modifier = DashboardModifiers.grid,
+            contentPadding = DashboardModifiers.gridContentPadding,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
@@ -163,7 +164,7 @@ fun DashboardScreen(
             item(span = { GridItemSpan(maxLineSpan) }) {
                 DashboardSearchTriggerBar(
                     onClick = { isSearchOpen = true },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = DashboardModifiers.itemSpanFull
                 )
             }
 
@@ -178,12 +179,12 @@ fun DashboardScreen(
                     contentPadding = PaddingValues(0.dp),
                     pageSpacing = 16.dp,
                     beyondViewportPageCount = 1,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = DashboardModifiers.itemSpanFull
                 ) { page ->
                     val announcement = announcements[page]
                     AnnouncementCard(
                         announcement = announcement,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = DashboardModifiers.itemSpanFull
                     )
                 }
             }
@@ -202,7 +203,7 @@ fun DashboardScreen(
             item(span = { GridItemSpan(maxLineSpan) }) {
                 FeaturedPetsHeader(
                     onSeeAllClick = onSeeAllClick,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = DashboardModifiers.itemSpanFull
                 )
             }
 
@@ -214,7 +215,7 @@ fun DashboardScreen(
                         viewModel?.toggleFavorite(pet.id, pet.isFavorite)
                     },
                     onClick = { onPetClick(pet.id) },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = DashboardModifiers.itemSpanFull
                 )
             }
         }
@@ -226,7 +227,7 @@ fun DashboardScreen(
             exit = fadeOut(),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(end = 16.dp, bottom = 16.dp)
+                .then(DashboardModifiers.fab)
         ) {
             AppExtendedFab(
                 text = stringResource(R.string.dashboard_add_pet),
@@ -280,12 +281,10 @@ fun DashboardSearchTriggerBar(
         shape = CircleShape,
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
-        modifier = modifier.height(52.dp)
+        modifier = modifier.then(DashboardModifiers.searchTriggerSurface)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
+            modifier = DashboardModifiers.searchTriggerRow,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -567,17 +566,13 @@ fun AnnouncementCard(
     onClick: () -> Unit = {}
 ) {
     AppElevatedCard(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(154.dp),
+        modifier = modifier.then(DashboardModifiers.announcementCard),
         shape = AppShape.XLarge,
         onClick = onClick
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = DashboardModifiers.announcementContent
                 .background(announcement.backgroundBrush)
-                .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -686,7 +681,7 @@ fun PetCategoryCircularItem(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
-            .width(62.dp)
+            .then(DashboardModifiers.categoryItemColumn)
             .clickable(onClick = onClick)
     ) {
         // Pastel circular icon container (Using AppSurface from commonUI)
@@ -694,7 +689,7 @@ fun PetCategoryCircularItem(
             shape = CircleShape,
             color = category.backgroundColor,
             shadowElevation = 1.dp,
-            modifier = Modifier.size(56.dp)
+            modifier = DashboardModifiers.categoryIconSurface
         ) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -769,9 +764,7 @@ fun FeaturedPetCard(
         Column(modifier = Modifier.fillMaxWidth()) {
             // Image area with soft gradient & decorative pet silhouette
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(128.dp)
+                modifier = DashboardModifiers.featuredCardImage
                     .background(pet.cardGradient)
             ) {
                 // Central pet illustration
@@ -820,9 +813,7 @@ fun FeaturedPetCard(
 
             // Pet Info details
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp)
+                modifier = DashboardModifiers.featuredCardContent
             ) {
                 Text(
                     text = pet.name,
@@ -908,4 +899,10 @@ fun DashboardScreenTabletPreview() {
         DashboardScreen()
     }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DashboardModifiers — Centralized layout and styling tokens from AppModifier
+// ─────────────────────────────────────────────────────────────────────────────
+private typealias DashboardModifiers = AppModifier.Dashboard
+
 

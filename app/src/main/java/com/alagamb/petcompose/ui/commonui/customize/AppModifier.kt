@@ -9,35 +9,26 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.isSpecified
 
-// ─────────────────────────────────────────────────────────────────────────────
-// AppModifier — reusable Modifier extension functions
-// (replaces XML drawables used on raw View backgrounds)
-// ─────────────────────────────────────────────────────────────────────────────
-//
-// ⚠️  Use these on layout containers: Box, Column, Row, Surface, LazyColumn items.
-// ⚠️  Do NOT expect them to override internal backgrounds of M3 components
-//     like Button, Card, Chip — those are controlled by their `colors` parameter.
-//
-// Analogy to XML:
-//   <shape><solid color="…"/><corners radius="…"/></shape>  → Modifier.appBackground(...)
-//   <shape><stroke …/></shape>                               → Modifier.appBorder(...)
-//   <shape><gradient …/></shape>                             → Modifier.appGradientBackground(...)
-// ─────────────────────────────────────────────────────────────────────────────
 
 // ── Solid background + clip ────────────────────────────────────────────────
 
-/**
- * Solid color background with clipped corners.
- * Equivalent to `<solid color="…"/>` + `<corners radius="…"/>` in XML.
- *
- * Usage:
- * ```
- * Box(modifier = Modifier.appBackground(Color(0xFF6200EA), AppShape.Medium))
- * ```
- */
+
 fun Modifier.appBackground(
     color: Color,
     shape: Shape = AppShape.None,
@@ -47,20 +38,6 @@ fun Modifier.appBackground(
 
 // ── Gradient background + clip ─────────────────────────────────────────────
 
-/**
- * Horizontal gradient background with clipped corners.
- * Equivalent to `<gradient android:type="linear" …/>` in XML.
- *
- * Usage:
- * ```
- * Box(
- *   modifier = Modifier.appGradientBackground(
- *     colors = listOf(Color(0xFF6200EA), Color(0xFF03DAC5)),
- *     shape  = AppShape.Large
- *   )
- * )
- * ```
- */
 fun Modifier.appGradientBackground(
     colors: List<Color>,
     shape: Shape = AppShape.None,
@@ -76,9 +53,7 @@ fun Modifier.appGradientBackground(
         .background(brush = brush, shape = shape)
 }
 
-/**
- * Radial gradient background with clipped corners.
- */
+
 fun Modifier.appRadialBackground(
     colors: List<Color>,
     shape: Shape = AppShape.None,
@@ -88,15 +63,6 @@ fun Modifier.appRadialBackground(
 
 // ── Border / Stroke ────────────────────────────────────────────────────────
 
-/**
- * Adds a solid-color border around the composable.
- * Equivalent to `<stroke android:width="…" android:color="…"/>` in XML.
- *
- * Usage:
- * ```
- * Box(modifier = Modifier.appBorder(Color(0xFF6200EA), AppShape.Medium, 2.dp))
- * ```
- */
 fun Modifier.appBorder(
     color: Color,
     shape: Shape = AppShape.None,
@@ -106,9 +72,7 @@ fun Modifier.appBorder(
     shape  = shape,
 )
 
-/**
- * Gradient-colored border.
- */
+
 fun Modifier.appGradientBorder(
     colors: List<Color>,
     shape: Shape = AppShape.None,
@@ -120,21 +84,6 @@ fun Modifier.appGradientBorder(
 
 // ── Background + Border combined (like a solid drawable with stroke) ────────
 
-/**
- * Solid background + border in one call.
- * Equivalent to `<solid/>` + `<stroke/>` + `<corners/>` in XML.
- *
- * Usage:
- * ```
- * Box(
- *   modifier = Modifier.appFill(
- *     fillColor   = Color.White,
- *     borderColor = Color(0xFF6200EA),
- *     shape       = AppShape.Medium
- *   )
- * )
- * ```
- */
 fun Modifier.appFill(
     fillColor: Color,
     borderColor: Color = Color.Transparent,
@@ -147,15 +96,6 @@ fun Modifier.appFill(
 
 // ── Shadow / Elevation ─────────────────────────────────────────────────────
 
-/**
- * Draws a shadow below the composable, respecting the given [shape].
- * Use on raw composables — for M3 components use their `elevation` parameter.
- *
- * Usage:
- * ```
- * Box(modifier = Modifier.appShadow(8.dp, AppShape.Large))
- * ```
- */
 fun Modifier.appShadow(
     elevation: Dp,
     shape: Shape = AppShape.None,
@@ -170,24 +110,6 @@ fun Modifier.appShadow(
 
 // ── Full card-style surface (background + shadow + clip) ───────────────────
 
-/**
- * All-in-one: shadow + solid fill + optional border.
- * The Compose equivalent of a card-shaped XML drawable.
- *
- * Usage:
- * ```
- * Column(
- *   modifier = Modifier
- *     .fillMaxWidth()
- *     .appSurface(
- *       fillColor   = Color.White,
- *       shape       = AppShape.Large,
- *       shadowDp    = 8.dp
- *     )
- *     .padding(16.dp)
- * )
- * ```
- */
 fun Modifier.appSurface(
     fillColor: Color,
     shape: Shape = AppShape.None,
@@ -203,3 +125,134 @@ fun Modifier.appSurface(
             Modifier.border(BorderStroke(borderWidth, borderColor), shape)
         else Modifier
     )
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AppModifier — Centralized layout & styling tokens across the application
+// ─────────────────────────────────────────────────────────────────────────────
+object AppModifier {
+
+    // ── Shared / Common Modifiers across all screens ──────────────────────────
+    object Shared {
+        val root: Modifier = Modifier.fillMaxSize()
+        val fillWidth: Modifier = Modifier.fillMaxWidth()
+
+        fun screenRoot(backgroundColor: Color = Color.Unspecified): Modifier = Modifier
+            .fillMaxSize()
+            .then(if (backgroundColor != Color.Unspecified) Modifier.background(backgroundColor) else Modifier)
+            .statusBarsPadding()
+            .navigationBarsPadding()
+
+        fun contentScroll(maxWidth: Dp = Dp.Unspecified, scrollState: ScrollState): Modifier = Modifier
+            .then(if (maxWidth.isSpecified) Modifier.widthIn(max = maxWidth) else Modifier)
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp)
+            .verticalScroll(scrollState)
+
+        fun adaptiveWidth(isTablet: Boolean, isWideScreen: Boolean, defaultWidth: Dp = 500.dp): Dp = when {
+            isTablet -> 440.dp
+            isWideScreen -> 460.dp
+            else -> defaultWidth
+        }
+    }
+
+    // ── Registration (Land, Login, Register) ──────────────────────────────────
+    object Registration {
+        fun root(backgroundColor: Color): Modifier = Shared.screenRoot(backgroundColor)
+
+        fun contentScroll(maxWidth: Dp, scrollState: ScrollState): Modifier =
+            Shared.contentScroll(maxWidth, scrollState)
+
+        fun calculateCardWidth(isTablet: Boolean, isWideScreen: Boolean): Dp =
+            Shared.adaptiveWidth(isTablet, isWideScreen, defaultWidth = 500.dp)
+
+        val topNavRow: Modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 12.dp, bottom = 16.dp)
+
+        val backButtonSurface: Modifier = Modifier.size(42.dp)
+
+        val heroColumn: Modifier = Modifier.fillMaxWidth()
+
+        val forgotPasswordRow: Modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp, bottom = 4.dp)
+
+        val passwordRequirementNote: Modifier = Modifier.padding(top = 6.dp, start = 4.dp)
+
+        val errorBanner: Modifier = Modifier.fillMaxWidth()
+
+        val errorBannerRow: Modifier = Modifier.padding(14.dp)
+
+        val submitButton: Modifier = Modifier.fillMaxWidth()
+
+        val footerRow: Modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 24.dp)
+
+        // Land-specific
+        val topBarRow: Modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 12.dp, bottom = 8.dp)
+
+        val languageButtonPadding: Modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
+
+        val subtitleText: Modifier = Modifier.padding(horizontal = 16.dp)
+
+        val featureBadgesRow: Modifier = Modifier.fillMaxWidth()
+
+        val actionButtonsColumn: Modifier = Modifier.fillMaxWidth()
+
+        val actionButton: Modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+
+        val termsNote: Modifier = Modifier.padding(bottom = 16.dp, start = 12.dp, end = 12.dp)
+    }
+
+    // ── Dashboard ─────────────────────────────────────────────────────────────
+    object Dashboard {
+        val root: Modifier = Modifier.fillMaxSize()
+
+        val grid: Modifier = Modifier.fillMaxSize()
+
+        val gridContentPadding: PaddingValues = PaddingValues(
+            start = 16.dp,
+            end = 16.dp,
+            top = 12.dp,
+            bottom = 28.dp
+        )
+
+        val itemSpanFull: Modifier = Modifier.fillMaxWidth()
+
+        val fab: Modifier = Modifier.padding(end = 16.dp, bottom = 16.dp)
+
+        val searchTriggerSurface: Modifier = Modifier.height(52.dp)
+
+        val searchTriggerRow: Modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+
+        val announcementCard: Modifier = Modifier
+            .fillMaxWidth()
+            .height(154.dp)
+
+        val announcementContent: Modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 20.dp, vertical = 16.dp)
+
+        val categoryItemColumn: Modifier = Modifier.width(62.dp)
+
+        val categoryIconSurface: Modifier = Modifier.size(56.dp)
+
+        val featuredCardImage: Modifier = Modifier
+            .fillMaxWidth()
+            .height(128.dp)
+
+        val featuredCardContent: Modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp)
+    }
+}
+
+typealias AppModifiers = AppModifier
+

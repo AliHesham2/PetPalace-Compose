@@ -15,6 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.window.core.layout.WindowSizeClass
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -92,6 +95,14 @@ fun RequestsScreen(
     onDeleteRequest: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val windowAdaptiveInfo = currentWindowAdaptiveInfo()
+    val isTablet = windowAdaptiveInfo.windowSizeClass.isWidthAtLeastBreakpoint(
+        WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND
+    )
+    val isWideScreen = windowAdaptiveInfo.windowSizeClass.isWidthAtLeastBreakpoint(
+        WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND
+    )
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -122,7 +133,10 @@ fun RequestsScreen(
                         .padding(32.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(
+                        modifier = Modifier.widthIn(max = 420.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Assignment,
                             contentDescription = null,
@@ -147,32 +161,43 @@ fun RequestsScreen(
                 }
             }
             else -> {
-                LazyVerticalGrid(
-                    columns = GridCells.Adaptive(minSize = 340.dp),
+                Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
-                    contentPadding = PaddingValues(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(14.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                    contentAlignment = Alignment.TopCenter
                 ) {
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        Text(
-                            text = stringResource(R.string.active_requests_count, state.requests.size),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        )
-                    }
+                    LazyVerticalGrid(
+                        columns = if (isWideScreen) GridCells.Fixed(2) else GridCells.Fixed(1),
+                        modifier = Modifier
+                            .widthIn(max = if (isTablet) 860.dp else if (isWideScreen) 680.dp else 500.dp)
+                            .fillMaxWidth(),
+                        contentPadding = PaddingValues(
+                            horizontal = if (isWideScreen) 24.dp else 16.dp,
+                            vertical = 16.dp
+                        ),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            Text(
+                                text = stringResource(R.string.active_requests_count, state.requests.size),
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+                        }
 
-                    items(
-                        items = state.requests,
-                        key = { it.id }
-                    ) { request ->
-                        RequestCard(
-                            request = request,
-                            onDelete = { onDeleteRequest(request.id) }
-                        )
+                        items(
+                            items = state.requests,
+                            key = { it.id }
+                        ) { request ->
+                            RequestCard(
+                                request = request,
+                                onDelete = { onDeleteRequest(request.id) }
+                            )
+                        }
                     }
                 }
             }
@@ -350,6 +375,47 @@ fun RequestsScreenPreview() {
                         quantity = 1,
                         totalPrice = "$120.00",
                         status = "Pending",
+                        createdAt = System.currentTimeMillis()
+                    )
+                ),
+                isLoading = false
+            ),
+            onBackClick = {}
+        )
+    }
+}
+
+@Preview(name = "Foldable", device = "spec:width=673dp,height=841dp,dpi=420", showBackground = true)
+@Composable
+fun RequestsScreenFoldablePreview() {
+    PetComposeTheme {
+        RequestsScreen(
+            state = RequestsUiState(
+                requests = listOf(
+                    PetRequestItem(
+                        id = "1",
+                        petId = "pet1",
+                        petName = "Golden Retriever Puppy",
+                        petCategory = "Dogs",
+                        petPrice = "$120.00",
+                        petDescription = "Friendly pup",
+                        tag = "Popular",
+                        quantity = 1,
+                        totalPrice = "$120.00",
+                        status = "Pending",
+                        createdAt = System.currentTimeMillis()
+                    ),
+                    PetRequestItem(
+                        id = "2",
+                        petId = "pet2",
+                        petName = "Siamese Cat",
+                        petCategory = "Cats",
+                        petPrice = "$90.00",
+                        petDescription = "Playful kitten",
+                        tag = "New",
+                        quantity = 2,
+                        totalPrice = "$180.00",
+                        status = "Approved",
                         createdAt = System.currentTimeMillis()
                     )
                 ),
