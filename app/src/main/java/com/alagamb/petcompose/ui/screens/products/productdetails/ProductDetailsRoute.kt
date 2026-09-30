@@ -57,8 +57,9 @@ import com.alagamb.petcompose.ui.commonui.buttons.AppButton
 import com.alagamb.petcompose.ui.commonui.buttons.AppButtonStyles
 import com.alagamb.petcompose.ui.commonui.buttons.AppIconButton
 import com.alagamb.petcompose.ui.commonui.cards.AppElevatedCard
-import com.alagamb.petcompose.ui.commonui.customize.AppShape
 import com.alagamb.petcompose.ui.commonui.customize.AppColors
+import com.alagamb.petcompose.ui.commonui.customize.AppModifier
+import com.alagamb.petcompose.ui.commonui.customize.AppShape
 import com.alagamb.petcompose.ui.commonui.navigation.AppTopBar
 import com.alagamb.petcompose.ui.commonui.surface.AppSurface
 import com.alagamb.petcompose.ui.commonui.surface.AppSurfaceStyles
@@ -113,7 +114,7 @@ fun ProductDetailsScreen(
     val product = state.product
 
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.then(ProductDetailsModifiers.root),
         topBar = {
             AppTopBar(
                 title = product?.name ?: stringResource(R.string.product_details_title),
@@ -184,16 +185,13 @@ fun ProductDetailsScreen(
             }
         } else {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
+                modifier = ProductDetailsModifiers.scrollContent
                     .padding(innerPadding)
                     .verticalScroll(rememberScrollState())
             ) {
                 // 1. Hero Artwork / Banner
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(240.dp)
+                    modifier = ProductDetailsModifiers.bannerImage
                         .background(product.cardGradient)
                 ) {
                     // Center decorative illustration
@@ -243,9 +241,7 @@ fun ProductDetailsScreen(
 
                 // 2. Product Information Details
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp)
+                    modifier = ProductDetailsModifiers.contentSection
                 ) {
                     // Category pill
                     AppSurface(
@@ -425,15 +421,13 @@ private fun ProductDetailsBottomBar(
 ) {
     AppSurface(
         modifier = modifier
-            .fillMaxWidth()
+            .then(ProductDetailsModifiers.bottomBarSurface)
             .navigationBarsPadding(),
         shadowElevation = 8.dp,
         color = MaterialTheme.colorScheme.surface
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+            modifier = ProductDetailsModifiers.bottomBarRow,
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -529,3 +523,9 @@ fun ProductDetailsScreenNotFoundPreview() {
         )
     }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ProductDetailsModifiers — Centralized layout and styling tokens from AppModifier
+// ─────────────────────────────────────────────────────────────────────────────
+private typealias ProductDetailsModifiers = AppModifier.ProductDetails
+

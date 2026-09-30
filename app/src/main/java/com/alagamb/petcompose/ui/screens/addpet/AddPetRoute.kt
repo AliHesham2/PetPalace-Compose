@@ -75,6 +75,7 @@ import com.alagamb.petcompose.ui.commonui.buttons.AppMorphingButton
 import com.alagamb.petcompose.ui.commonui.cards.AppCard
 import com.alagamb.petcompose.ui.commonui.chips.AppFilterChip
 import com.alagamb.petcompose.ui.commonui.customize.AppColors
+import com.alagamb.petcompose.ui.commonui.customize.AppModifier
 import com.alagamb.petcompose.ui.commonui.customize.AppShape
 import com.alagamb.petcompose.ui.commonui.navigation.AppTopBar
 import com.alagamb.petcompose.ui.commonui.textfield.AppOutlinedTextField
@@ -133,7 +134,7 @@ fun AddPetScreen(
     )
 
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.then(AddPetModifiers.root),
         topBar = {
             AppTopBar(
                 title = stringResource(R.string.add_pet_title),
@@ -151,10 +152,7 @@ fun AddPetScreen(
             if (isWideScreen) {
                 // Dual-Pane / Supporting Pane layout for Tablets and Foldables
                 Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 24.dp, vertical = 16.dp)
-                        .navigationBarsPadding(),
+                    modifier = AddPetModifiers.dualPaneContainer,
                     horizontalArrangement = Arrangement.spacedBy(28.dp)
                 ) {
                     // Left Column: Scrollable Form
@@ -189,11 +187,8 @@ fun AddPetScreen(
             } else {
                 // Single-column layout for Phones
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(scrollState)
-                        .padding(horizontal = 16.dp, vertical = 12.dp)
-                        .navigationBarsPadding(),
+                    modifier = AddPetModifiers.singlePaneContainer
+                        .verticalScroll(scrollState),
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     AddPetLivePreviewCard(state = state)
@@ -391,9 +386,7 @@ private fun AddPetFormFields(
         isLoading = state.isLoading,
         onClick = { onIntent(AddPetIntent.SubmitPet) },
         leadingIcon = Icons.Default.CheckCircle,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(54.dp)
+        modifier = AddPetModifiers.submitButton
     )
 
     Spacer(modifier = Modifier.height(16.dp))
@@ -630,7 +623,7 @@ private fun AddPetLivePreviewCard(state: AddPetUiState) {
         shape = AppShape.Large,
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        modifier = Modifier.fillMaxWidth()
+        modifier = AddPetModifiers.previewCard
     ) {
         Column {
             // Gradient banner with pet icon and tag badge
@@ -840,4 +833,10 @@ private fun AddPetFoldablePreview() {
         )
     }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AddPetModifiers — Centralized layout and styling tokens from AppModifier
+// ─────────────────────────────────────────────────────────────────────────────
+private typealias AddPetModifiers = AppModifier.AddPet
+
 

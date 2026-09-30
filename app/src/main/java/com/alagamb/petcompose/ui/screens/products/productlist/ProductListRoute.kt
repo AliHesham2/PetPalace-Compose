@@ -70,8 +70,9 @@ import com.alagamb.petcompose.data.model.product.ProductItem
 import com.alagamb.petcompose.ui.commonui.buttons.AppIconButton
 import com.alagamb.petcompose.ui.commonui.cards.AppElevatedCard
 import com.alagamb.petcompose.ui.commonui.chips.AppFilterChip
-import com.alagamb.petcompose.ui.commonui.customize.AppShape
 import com.alagamb.petcompose.ui.commonui.customize.AppColors
+import com.alagamb.petcompose.ui.commonui.customize.AppModifier
+import com.alagamb.petcompose.ui.commonui.customize.AppShape
 import com.alagamb.petcompose.ui.commonui.navigation.AppTopBar
 import com.alagamb.petcompose.ui.commonui.surface.AppSurface
 import com.alagamb.petcompose.ui.commonui.surface.AppSurfaceStyles
@@ -205,7 +206,7 @@ fun ProductListScreen(
     val displayTitle = state.title.ifEmpty { defaultTitle }
 
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.then(ProductListModifiers.root),
         topBar = {
             AppTopBar(
                 title = displayTitle,
@@ -235,15 +236,13 @@ fun ProductListScreen(
                     }
                 } else null,
                 style = AppTextFieldStyles.outlined(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                modifier = ProductListModifiers.searchField
             )
 
             // Filter Chips synced from Room DB
             LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(horizontal = 16.dp),
+                modifier = ProductListModifiers.filterChipsRow,
+                contentPadding = ProductListModifiers.filterChipsPadding,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(state.filterTags) { tag ->
@@ -269,9 +268,7 @@ fun ProductListScreen(
 
             // Results count / state header
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                modifier = ProductListModifiers.resultsHeader,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -356,10 +353,9 @@ fun ProductListScreen(
                 else -> {
                     LazyVerticalGrid(
                         columns = GridCells.Adaptive(minSize = 170.dp),
-                        modifier = Modifier
-                            .fillMaxSize()
+                        modifier = ProductListModifiers.grid
                             .weight(1f),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                        contentPadding = ProductListModifiers.gridContentPadding,
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
@@ -431,16 +427,14 @@ fun ProductGridCard(
     modifier: Modifier = Modifier
 ) {
     AppElevatedCard(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.then(ProductListModifiers.card),
         shape = AppShape.Large,
         onClick = onClick
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             // Header Image area with soft gradient & badge
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp)
+                modifier = ProductListModifiers.cardImage
                     .background(product.cardGradient)
             ) {
                 // Decorative icon illustration
@@ -490,9 +484,7 @@ fun ProductGridCard(
 
             // Product Information
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp)
+                modifier = ProductListModifiers.cardContent
             ) {
                 Text(
                     text = product.name,
@@ -711,4 +703,10 @@ fun ProductListFoldableDualPanePreview() {
         }
     }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ProductListModifiers — Centralized layout and styling tokens from AppModifier
+// ─────────────────────────────────────────────────────────────────────────────
+private typealias ProductListModifiers = AppModifier.ProductList
+
 

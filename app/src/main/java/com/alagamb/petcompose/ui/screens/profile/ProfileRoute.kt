@@ -71,6 +71,7 @@ import com.alagamb.petcompose.data.preferences.ThemeMode
 import com.alagamb.petcompose.ui.commonui.cards.AppCard
 import com.alagamb.petcompose.ui.commonui.cards.AppElevatedCard
 import com.alagamb.petcompose.ui.commonui.customize.AppColors
+import com.alagamb.petcompose.ui.commonui.customize.AppModifier
 import com.alagamb.petcompose.ui.commonui.customize.AppShape
 import com.alagamb.petcompose.ui.commonui.customize.appBorder
 import com.alagamb.petcompose.ui.commonui.customize.appGradientBackground
@@ -165,14 +166,12 @@ fun ProfileScreen(
     }
 
     Box(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.then(ProfileModifiers.root),
         contentAlignment = Alignment.TopCenter
     ) {
         LazyColumn(
-            modifier = Modifier
-                .widthIn(max = 520.dp)
-                .fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+            modifier = ProfileModifiers.listContainer,
+            contentPadding = ProfileModifiers.listContentPadding,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // ── 1. Hero Profile Header Card ───────────────────────────────────────
@@ -331,7 +330,7 @@ private fun ProfileHeroCard(
     modifier: Modifier = Modifier
 ) {
     AppElevatedCard(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.then(ProfileModifiers.heroCard),
         shape = AppShape.XLarge
     ) {
         Column(
@@ -696,13 +695,11 @@ private fun ProfileSectionCard(
     content: @Composable () -> Unit
 ) {
     AppElevatedCard(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.then(ProfileModifiers.sectionCard),
         shape = AppShape.Large
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+            modifier = ProfileModifiers.sectionContent
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -961,4 +958,10 @@ fun ProfileScreenTabletPreview() {
         )
     }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ProfileModifiers — Centralized layout and styling tokens from AppModifier
+// ─────────────────────────────────────────────────────────────────────────────
+private typealias ProfileModifiers = AppModifier.Profile
+
 

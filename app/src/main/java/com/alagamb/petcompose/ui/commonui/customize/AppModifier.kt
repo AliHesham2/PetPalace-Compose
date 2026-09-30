@@ -252,6 +252,134 @@ object AppModifier {
             .fillMaxWidth()
             .padding(12.dp)
     }
+
+    // ── Requests ──────────────────────────────────────────────────────────────
+    object Requests {
+        val root: Modifier = Modifier.fillMaxSize()
+
+        fun contentContainer(maxWidth: Dp): Modifier = Modifier
+            .widthIn(max = maxWidth)
+            .fillMaxWidth()
+
+        val emptyContainer: Modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp)
+
+        val emptyCard: Modifier = Modifier.widthIn(max = 420.dp)
+
+        val requestCard: Modifier = Modifier.fillMaxWidth()
+
+        val cardHeader: Modifier = Modifier
+            .fillMaxWidth()
+            .height(90.dp)
+            .padding(12.dp)
+
+        val cardContent: Modifier = Modifier
+            .fillMaxWidth()
+            .padding(14.dp)
+    }
+
+    // ── Profile ───────────────────────────────────────────────────────────────
+    object Profile {
+        val root: Modifier = Modifier.fillMaxSize()
+
+        val listContainer: Modifier = Modifier
+            .widthIn(max = 520.dp)
+            .fillMaxWidth()
+
+        val listContentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 16.dp)
+
+        val heroCard: Modifier = Modifier.fillMaxWidth()
+
+        val heroAvatar: Modifier = Modifier.size(80.dp)
+
+        val sectionCard: Modifier = Modifier.fillMaxWidth()
+
+        val sectionContent: Modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+
+        val statItem: Modifier = Modifier.width(80.dp)
+    }
+
+    // ── Add Pet ───────────────────────────────────────────────────────────────
+    object AddPet {
+        val root: Modifier = Modifier.fillMaxSize()
+
+        val dualPaneContainer: Modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .navigationBarsPadding()
+
+        val singlePaneContainer: Modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .navigationBarsPadding()
+
+        val formColumn: Modifier = Modifier.fillMaxWidth()
+
+        val previewCard: Modifier = Modifier.fillMaxWidth()
+
+        val submitButton: Modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+    }
+
+    // ── Product List ──────────────────────────────────────────────────────────
+    object ProductList {
+        val root: Modifier = Modifier.fillMaxSize()
+
+        val searchField: Modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+
+        val filterChipsRow: Modifier = Modifier.fillMaxWidth()
+
+        val filterChipsPadding: PaddingValues = PaddingValues(horizontal = 16.dp)
+
+        val resultsHeader: Modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+
+        val grid: Modifier = Modifier.fillMaxSize()
+
+        val gridContentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+
+        val card: Modifier = Modifier.fillMaxWidth()
+
+        val cardImage: Modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp)
+
+        val cardContent: Modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp)
+    }
+
+    // ── Product Details ───────────────────────────────────────────────────────
+    object ProductDetails {
+        val root: Modifier = Modifier.fillMaxSize()
+
+        val scrollContent: Modifier = Modifier.fillMaxSize()
+
+        val bannerImage: Modifier = Modifier
+            .fillMaxWidth()
+            .height(240.dp)
+
+        val contentSection: Modifier = Modifier
+            .fillMaxWidth()
+            .padding(18.dp)
+
+        val bottomBarSurface: Modifier = Modifier.fillMaxWidth()
+
+        val bottomBarRow: Modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 14.dp)
+
+        val actionButton: Modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+    }
 }
 
 typealias AppModifiers = AppModifier

@@ -53,8 +53,9 @@ import com.alagamb.petcompose.R
 import com.alagamb.petcompose.data.model.request.PetRequestItem
 import com.alagamb.petcompose.ui.commonui.buttons.AppIconButton
 import com.alagamb.petcompose.ui.commonui.cards.AppElevatedCard
-import com.alagamb.petcompose.ui.commonui.customize.AppShape
 import com.alagamb.petcompose.ui.commonui.customize.AppColors
+import com.alagamb.petcompose.ui.commonui.customize.AppModifier
+import com.alagamb.petcompose.ui.commonui.customize.AppShape
 import com.alagamb.petcompose.ui.commonui.navigation.AppTopBar
 import com.alagamb.petcompose.ui.commonui.surface.AppSurface
 import com.alagamb.petcompose.ui.commonui.surface.AppSurfaceStyles
@@ -104,7 +105,7 @@ fun RequestsScreen(
     )
 
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.then(RequestsModifiers.root),
         topBar = {
             AppTopBar(
                 title = stringResource(R.string.requests_title),
@@ -127,14 +128,12 @@ fun RequestsScreen(
             }
             state.requests.isEmpty() -> {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                        .padding(32.dp),
+                    modifier = RequestsModifiers.emptyContainer
+                        .padding(innerPadding),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
-                        modifier = Modifier.widthIn(max = 420.dp),
+                        modifier = RequestsModifiers.emptyCard,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Icon(
@@ -169,9 +168,9 @@ fun RequestsScreen(
                 ) {
                     LazyVerticalGrid(
                         columns = if (isWideScreen) GridCells.Fixed(2) else GridCells.Fixed(1),
-                        modifier = Modifier
-                            .widthIn(max = if (isTablet) 860.dp else if (isWideScreen) 680.dp else 500.dp)
-                            .fillMaxWidth(),
+                        modifier = RequestsModifiers.contentContainer(
+                            if (isTablet) 860.dp else if (isWideScreen) 680.dp else 500.dp
+                        ),
                         contentPadding = PaddingValues(
                             horizontal = if (isWideScreen) 24.dp else 16.dp,
                             vertical = 16.dp
@@ -212,17 +211,14 @@ fun RequestCard(
     modifier: Modifier = Modifier
 ) {
     AppElevatedCard(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.then(RequestsModifiers.requestCard),
         shape = AppShape.Large
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             // Card Header Banner
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(90.dp)
+                modifier = RequestsModifiers.cardHeader
                     .background(request.cardGradient)
-                    .padding(12.dp)
             ) {
                 // Background Pet Silhouette Icon
                 Icon(
@@ -287,9 +283,7 @@ fun RequestCard(
 
             // Card Body
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(14.dp)
+                modifier = RequestsModifiers.cardContent
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -466,3 +460,9 @@ fun RequestsScreenTabletPreview() {
         )
     }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RequestsModifiers — Centralized layout and styling tokens from AppModifier
+// ─────────────────────────────────────────────────────────────────────────────
+private typealias RequestsModifiers = AppModifier.Requests
+
