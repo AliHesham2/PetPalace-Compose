@@ -1,6 +1,7 @@
 package com.alagamb.petcompose.ui.commonui.navigation
 
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Badge
@@ -79,6 +80,7 @@ fun AppModalDrawer(
     currentRoute   : String,
     onNavigate     : (String) -> Unit,
     modifier       : Modifier = Modifier,
+    sheetModifier  : Modifier = Modifier.fillMaxWidth(0.75f),
     gesturesEnabled: Boolean = true,
     title          : String? = "Petify",
     header         : (@Composable () -> Unit)? = null,
@@ -95,6 +97,7 @@ fun AppModalDrawer(
                 items        = items,
                 currentRoute = currentRoute,
                 onNavigate   = onNavigate,
+                modifier     = sheetModifier,
                 title        = title,
                 header       = header,
                 footer       = footer,
@@ -111,10 +114,10 @@ fun AppModalDrawer(
  */
 @Composable
 fun AppDrawerSheet(
+    modifier    : Modifier = Modifier,
     items       : List<DrawerNavItem>,
     currentRoute: String,
     onNavigate  : (String) -> Unit,
-    modifier    : Modifier = Modifier,
     title       : String? = "Petify",
     header      : (@Composable () -> Unit)? = null,
     footer      : (@Composable () -> Unit)? = null,

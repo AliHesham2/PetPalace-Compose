@@ -1,12 +1,23 @@
 package com.alagamb.petcompose.ui.screens.profile
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.offset
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.window.core.layout.WindowSizeClass
@@ -499,6 +510,7 @@ private fun ProfileStatColumn(
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Theme Mode Segmented Selector (System / Light / Dark)
+// Sliding Pill with Spring Physics & Micro-animated Icons
 // ─────────────────────────────────────────────────────────────────────────────
 @Composable
 private fun ThemeModeSegmentedSelector(
@@ -506,37 +518,90 @@ private fun ThemeModeSegmentedSelector(
     onModeSelected: (ThemeMode) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
+    // Optimistic local state for instantaneous 0ms feedback
+    var currentSelection by remember(selectedMode) { mutableStateOf(selectedMode) }
+
+    val targetIndex = when (currentSelection) {
+        ThemeMode.SYSTEM -> 0
+        ThemeMode.LIGHT -> 1
+        ThemeMode.DARK -> 2
+    }
+
+    BoxWithConstraints(
         modifier = modifier
             .fillMaxWidth()
+            .height(48.dp)
             .clip(AppShape.Pill)
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f))
-            .padding(4.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+            .padding(4.dp)
     ) {
-        ThemeModeTab(
-            label = stringResource(R.string.profile_theme_system),
-            icon = Icons.Default.BrightnessAuto,
-            isSelected = selectedMode == ThemeMode.SYSTEM,
-            onClick = { onModeSelected(ThemeMode.SYSTEM) },
-            modifier = Modifier.weight(1f)
+        val tabWidth = maxWidth / 3
+        val animatedOffset by animateDpAsState(
+            targetValue = tabWidth * targetIndex,
+            animationSpec = spring(
+                dampingRatio = 0.78f,
+                stiffness = Spring.StiffnessMediumLow
+            ),
+            label = "pillIndicatorOffset"
         )
 
-        ThemeModeTab(
-            label = stringResource(R.string.profile_theme_light),
-            icon = Icons.Default.LightMode,
-            isSelected = selectedMode == ThemeMode.LIGHT,
-            onClick = { onModeSelected(ThemeMode.LIGHT) },
-            modifier = Modifier.weight(1f)
+        // Sliding active indicator pill
+        Box(
+            modifier = Modifier
+                .offset(x = animatedOffset)
+                .width(tabWidth)
+                .fillMaxHeight()
+                .shadow(elevation = 3.dp, shape = AppShape.Pill)
+                .clip(AppShape.Pill)
+                .background(MaterialTheme.colorScheme.primary)
         )
 
-        ThemeModeTab(
-            label = stringResource(R.string.profile_theme_dark),
-            icon = Icons.Default.DarkMode,
-            isSelected = selectedMode == ThemeMode.DARK,
-            onClick = { onModeSelected(ThemeMode.DARK) },
-            modifier = Modifier.weight(1f)
-        )
+        // Interactive Tabs Row
+        Row(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            ThemeModeTab(
+                label = stringResource(R.string.profile_theme_system),
+                icon = Icons.Default.BrightnessAuto,
+                isSelected = currentSelection == ThemeMode.SYSTEM,
+                rotationAngle = if (currentSelection == ThemeMode.SYSTEM) 180f else 0f,
+                onClick = {
+                    currentSelection = ThemeMode.SYSTEM
+                    onModeSelected(ThemeMode.SYSTEM)
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+            )
+
+            ThemeModeTab(
+                label = stringResource(R.string.profile_theme_light),
+                icon = Icons.Default.LightMode,
+                isSelected = currentSelection == ThemeMode.LIGHT,
+                rotationAngle = if (currentSelection == ThemeMode.LIGHT) 360f else 0f,
+                onClick = {
+                    currentSelection = ThemeMode.LIGHT
+                    onModeSelected(ThemeMode.LIGHT)
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+            )
+
+            ThemeModeTab(
+                label = stringResource(R.string.profile_theme_dark),
+                icon = Icons.Default.DarkMode,
+                isSelected = currentSelection == ThemeMode.DARK,
+                rotationAngle = if (currentSelection == ThemeMode.DARK) -25f else 0f,
+                onClick = {
+                    currentSelection = ThemeMode.DARK
+                    onModeSelected(ThemeMode.DARK)
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+            )
+        }
     }
 }
 
@@ -545,27 +610,45 @@ private fun ThemeModeTab(
     label: String,
     icon: ImageVector,
     isSelected: Boolean,
+    rotationAngle: Float,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val containerColor by animateColorAsState(
-        targetValue = if (isSelected) MaterialTheme.colorScheme.primary else AppColors.Transparent,
-        label = "tabContainerColor"
+    val animatedRotation by animateFloatAsState(
+        targetValue = rotationAngle,
+        animationSpec = spring(
+            dampingRatio = 0.65f,
+            stiffness = Spring.StiffnessMediumLow
+        ),
+        label = "iconRotation"
     )
+
+    val animatedScale by animateFloatAsState(
+        targetValue = if (isSelected) 1.15f else 1f,
+        animationSpec = spring(
+            dampingRatio = 0.7f,
+            stiffness = Spring.StiffnessMedium
+        ),
+        label = "iconScale"
+    )
+
     val contentColor by animateColorAsState(
         targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+        animationSpec = spring(stiffness = Spring.StiffnessMedium),
         label = "tabContentColor"
     )
 
-    AppSurface(
-        onClick = onClick,
-        shape = AppShape.Pill,
-        color = containerColor,
-        shadowElevation = if (isSelected) 2.dp else 0.dp,
-        modifier = modifier.height(40.dp)
+    Box(
+        modifier = modifier
+            .clip(AppShape.Pill)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick
+            ),
+        contentAlignment = Alignment.Center
     ) {
         Row(
-            modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -573,7 +656,10 @@ private fun ThemeModeTab(
                 imageVector = icon,
                 contentDescription = label,
                 tint = contentColor,
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier
+                    .size(17.dp)
+                    .scale(animatedScale)
+                    .rotate(animatedRotation)
             )
             Spacer(modifier = Modifier.width(6.dp))
             Text(

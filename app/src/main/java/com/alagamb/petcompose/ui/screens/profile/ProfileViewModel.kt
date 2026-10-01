@@ -1,7 +1,5 @@
 package com.alagamb.petcompose.ui.screens.profile
 
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alagamb.petcompose.data.preferences.AppPreferencesManager
@@ -10,7 +8,6 @@ import com.alagamb.petcompose.repo.pet.PetRepository
 import com.alagamb.petcompose.repo.request.RequestRepository
 import com.alagamb.petcompose.repo.user.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -35,14 +32,11 @@ class ProfileViewModel @Inject constructor(
     private val petRepository: PetRepository
 ) : ViewModel() {
 
-    private val currentLocaleTag = AppCompatDelegate.getApplicationLocales()[0]?.language ?: "en"
-    private val _selectedLanguage = MutableStateFlow(currentLocaleTag)
-
     val uiState: StateFlow<ProfileUiState> = combine(
         userRepository.currentUser,
         requestRepository.getAllRequests(),
         appPreferencesManager.themeModeFlow,
-        _selectedLanguage
+        appPreferencesManager.appLanguageFlow
     ) { user, requests, themeMode, language ->
         ProfileUiState(
             username = user?.username.orEmpty().ifBlank { "Aly Mohamed" },
@@ -55,25 +49,19 @@ class ProfileViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = ProfileUiState(selectedLanguage = currentLocaleTag)
+        initialValue = ProfileUiState(selectedLanguage = appPreferencesManager.getInitialLanguage())
     )
 
     fun setThemeMode(mode: ThemeMode) {
         viewModelScope.launch {
             appPreferencesManager.setThemeMode(mode)
-            val nightMode = when (mode) {
-                ThemeMode.SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                ThemeMode.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
-                ThemeMode.DARK -> AppCompatDelegate.MODE_NIGHT_YES
-            }
-            AppCompatDelegate.setDefaultNightMode(nightMode)
         }
     }
 
     fun setLanguage(languageCode: String) {
-        val appLocales = LocaleListCompat.forLanguageTags(languageCode)
-        AppCompatDelegate.setApplicationLocales(appLocales)
-        _selectedLanguage.value = languageCode
+        viewModelScope.launch {
+            appPreferencesManager.setAppLanguage(languageCode)
+        }
     }
 
     fun logout() {

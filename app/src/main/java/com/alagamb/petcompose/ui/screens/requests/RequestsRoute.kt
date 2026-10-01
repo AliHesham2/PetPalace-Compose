@@ -219,6 +219,7 @@ fun RequestCard(
             Box(
                 modifier = RequestsModifiers.cardHeader
                     .background(request.cardGradient)
+                    .padding(12.dp)
             ) {
                 // Background Pet Silhouette Icon
                 Icon(

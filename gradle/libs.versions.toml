@@ -17,8 +17,8 @@ hiltAndroid = "2.60.1"
 hiltNavigationCompose = "1.2.0"
 
 #Nav
-navigationRuntimeKtx = "2.10.1"
-navigationCompose = "2.10.1"
+navigationRuntimeKtx = "2.8.9"
+navigationCompose = "2.8.9"
 
 #GSON
 gson = "2.14.0"
@@ -88,6 +88,7 @@ androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", 
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 #parcelize
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }

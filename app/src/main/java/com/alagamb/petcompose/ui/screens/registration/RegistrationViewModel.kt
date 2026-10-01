@@ -89,6 +89,12 @@ class RegistrationViewModel @Inject constructor(
     private var hasAttemptedRegister: Boolean = false
     private var hasAttemptedLogin: Boolean = false
 
+    private val _uiState = MutableStateFlow(RegistrationUiState())
+    val uiState: StateFlow<RegistrationUiState> = _uiState.asStateFlow()
+
+    private val _sideEffect = Channel<RegistrationSideEffect>(Channel.BUFFERED)
+    val sideEffect: Flow<RegistrationSideEffect> = _sideEffect.receiveAsFlow()
+
     init {
         Log.i("TATZ", "INIT_REGISTRATION_VIEW_MODEL ")
         observeRegisterInputs()
@@ -98,12 +104,6 @@ class RegistrationViewModel @Inject constructor(
     override fun onCleared() {
         Log.i("TATZ", "CLEAR_REGISTRATION_VIEW_MODEL ")
     }
-
-    private val _uiState = MutableStateFlow(RegistrationUiState())
-    val uiState: StateFlow<RegistrationUiState> = _uiState.asStateFlow()
-
-    private val _sideEffect = Channel<RegistrationSideEffect>(Channel.BUFFERED)
-    val sideEffect: Flow<RegistrationSideEffect> = _sideEffect.receiveAsFlow()
 
     fun processIntent(intent: RegistrationIntent) = onIntent(intent)
 

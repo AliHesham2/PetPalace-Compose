@@ -29,12 +29,6 @@ class DashboardViewModel @Inject constructor(
     private val petRepository: PetRepository
 ) : ViewModel() {
 
-    init {
-        viewModelScope.launch {
-            petRepository.ensureSeeded()
-        }
-    }
-
     val currentUser: StateFlow<User?> = userRepository.currentUser
         .stateIn(
             scope = viewModelScope,
@@ -65,6 +59,12 @@ class DashboardViewModel @Inject constructor(
 
     private val _selectedTab = MutableStateFlow(MainTab.DASHBOARD)
     val selectedTab: StateFlow<MainTab> = _selectedTab.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            petRepository.ensureSeeded()
+        }
+    }
 
     fun selectTab(tab: MainTab) {
         _selectedTab.update { tab }

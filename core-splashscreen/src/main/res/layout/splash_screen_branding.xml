@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Luxury Pill Typography Badge: 100% Centered & Symmetric.
+     Shown in its own window at the bottom of the splash screen, see SplashScreenViewProvider. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/splashscreen_branding_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/bg_splash_branding_badge"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
+    android:paddingTop="7dp"
+    android:paddingBottom="8dp">
+
+    <TextView
+        android:id="@+id/splashscreen_branding_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="9sp"
+        android:letterSpacing="0.28"
+        android:textColor="#9E9E9E"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:includeFontPadding="false" />
+
+    <TextView
+        android:id="@+id/splashscreen_branding_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.08"
+        android:textColor="#6200EA"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:includeFontPadding="false" />
+
+</LinearLayout>

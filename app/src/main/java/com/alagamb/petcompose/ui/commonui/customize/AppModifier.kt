@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+
 package com.alagamb.petcompose.ui.commonui.customize
 
 import androidx.compose.foundation.BorderStroke
@@ -11,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,6 +21,8 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.imeNestedScroll
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.verticalScroll
@@ -141,11 +146,13 @@ object AppModifier {
             .then(if (backgroundColor != Color.Unspecified) Modifier.background(backgroundColor) else Modifier)
             .statusBarsPadding()
             .navigationBarsPadding()
+            .imePadding()
 
         fun contentScroll(maxWidth: Dp = Dp.Unspecified, scrollState: ScrollState): Modifier = Modifier
             .then(if (maxWidth.isSpecified) Modifier.widthIn(max = maxWidth) else Modifier)
             .fillMaxWidth()
             .padding(horizontal = 24.dp)
+            .imeNestedScroll()
             .verticalScroll(scrollState)
 
         fun adaptiveWidth(isTablet: Boolean, isWideScreen: Boolean, defaultWidth: Dp = 500.dp): Dp = when {
@@ -228,6 +235,10 @@ object AppModifier {
 
         val searchTriggerSurface: Modifier = Modifier.height(52.dp)
 
+        val searchTriggerContainer: Modifier = Modifier
+            .fillMaxWidth()
+            .widthIn(max = 640.dp)
+
         val searchTriggerRow: Modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
@@ -236,9 +247,23 @@ object AppModifier {
             .fillMaxWidth()
             .height(154.dp)
 
+        fun announcementCardAdaptive(isCompactHeight: Boolean): Modifier = Modifier
+            .fillMaxWidth()
+            .height(if (isCompactHeight) 128.dp else 154.dp)
+
         val announcementContent: Modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 20.dp, vertical = 16.dp)
+
+        fun announcementContentAdaptive(isCompactHeight: Boolean): Modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 20.dp, vertical = if (isCompactHeight) 10.dp else 16.dp)
+
+        fun announcementTagPadding(isCompactHeight: Boolean): Modifier = Modifier
+            .padding(horizontal = 10.dp, vertical = if (isCompactHeight) 2.dp else 4.dp)
+
+        fun announcementCtaPadding(isCompactHeight: Boolean): Modifier = Modifier
+            .padding(horizontal = 14.dp, vertical = if (isCompactHeight) 4.dp else 6.dp)
 
         val categoryItemColumn: Modifier = Modifier.width(62.dp)
 
@@ -272,7 +297,6 @@ object AppModifier {
         val cardHeader: Modifier = Modifier
             .fillMaxWidth()
             .height(90.dp)
-            .padding(12.dp)
 
         val cardContent: Modifier = Modifier
             .fillMaxWidth()
@@ -310,11 +334,30 @@ object AppModifier {
             .fillMaxSize()
             .padding(horizontal = 24.dp, vertical = 16.dp)
             .navigationBarsPadding()
+            .imePadding()
+
+        fun dualPaneFormColumn(scrollState: ScrollState): Modifier = Modifier
+            .fillMaxHeight()
+            .imeNestedScroll()
+            .verticalScroll(scrollState)
+
+        fun dualPanePreviewColumn(scrollState: ScrollState): Modifier = Modifier
+            .fillMaxHeight()
+            .verticalScroll(scrollState)
 
         val singlePaneContainer: Modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp, vertical = 12.dp)
             .navigationBarsPadding()
+            .imePadding()
+
+        fun singlePaneContent(scrollState: ScrollState): Modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .navigationBarsPadding()
+            .imePadding()
+            .imeNestedScroll()
+            .verticalScroll(scrollState)
 
         val formColumn: Modifier = Modifier.fillMaxWidth()
 

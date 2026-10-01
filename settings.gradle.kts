@@ -24,4 +24,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "PetCompose"
 include(":app")
+include(":core-splashscreen")
  

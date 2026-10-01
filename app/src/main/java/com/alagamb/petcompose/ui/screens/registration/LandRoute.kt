@@ -2,13 +2,13 @@ package com.alagamb.petcompose.ui.screens.registration
 
 import com.alagamb.petcompose.ui.commonui.brand.AppLogo
 
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.os.LocaleListCompat
-
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -30,10 +30,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,15 +46,18 @@ import com.alagamb.petcompose.ui.commonui.buttons.AppOutlinedButton
 import com.alagamb.petcompose.ui.commonui.customize.AppModifier
 import com.alagamb.petcompose.ui.commonui.customize.AppShape
 import com.alagamb.petcompose.ui.theme.PetComposeTheme
+import com.alagamb.petcompose.util.rememberDebounceClick
 
 @Composable
 fun LandRoute(
     onClick: (isLogin: Boolean) -> Unit,
+    onToggleLanguage: () -> Unit = {},
     modifier: Modifier = Modifier,
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo()
 ) {
     LandScreen(
         onClick = onClick,
+        onToggleLanguage = onToggleLanguage,
         modifier = modifier,
         windowAdaptiveInfo = windowAdaptiveInfo
     )
@@ -67,17 +66,16 @@ fun LandRoute(
 @Composable
 fun LandScreen(
     onClick: (isLogin: Boolean) -> Unit,
+    onToggleLanguage: () -> Unit = {},
     modifier: Modifier = Modifier,
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo()
 ) {
     val scrollState = rememberScrollState()
-    val activeLocale = AppCompatDelegate.getApplicationLocales()[0]?.language ?: "en"
-    var currentLang by remember { mutableStateOf(activeLocale) }
+    val isArabic = LocalLayoutDirection.current == LayoutDirection.Rtl
+    val currentLang = if (isArabic) "ar" else "en"
 
-    fun toggleLanguage() {
-        val nextLang = if (currentLang == "ar") "en" else "ar"
-        currentLang = nextLang
-        AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(nextLang))
+    val onToggle = rememberDebounceClick(debounceTimeMs = 400L) {
+        onToggleLanguage()
     }
 
     val isTablet = windowAdaptiveInfo.windowSizeClass.isWidthAtLeastBreakpoint(
@@ -108,7 +106,7 @@ fun LandScreen(
                     color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
                     modifier = Modifier
                         .clip(AppShape.Pill)
-                        .clickable { toggleLanguage() }
+                        .clickable(onClick = onToggle)
                 ) {
                     Row(
                         modifier = LandModifiers.languageButtonPadding,
@@ -179,10 +177,10 @@ fun LandScreen(
                 Spacer(modifier = Modifier.height(28.dp))
 
                 // ── Highlight Feature Badges ─────────────────────────
-                Row(
+                FlowRow(
                     modifier = LandModifiers.featureBadgesRow,
                     horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     LandingFeatureBadge(
                         icon = Icons.Default.Verified,
@@ -271,7 +269,9 @@ private fun LandingFeatureBadge(
                 text = text,
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                softWrap = false
             )
         }
     }

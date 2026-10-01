@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    splash_icon_animator.xml
+    Splash entry animation, scale + rotate (700ms):
+    - grows from nothing to full size, with a small overshoot
+    - spins half a turn into place while growing
+    The start values have to match the ones of logo_group in ic_splash_icon.
+-->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:ordering="together">
+
+    <objectAnimator
+        android:propertyName="rotation"
+        android:duration="700"
+        android:valueFrom="-180"
+        android:valueTo="0"
+        android:valueType="floatType"
+        android:interpolator="@android:interpolator/fast_out_slow_in" />
+
+    <objectAnimator
+        android:propertyName="scaleX"
+        android:duration="700"
+        android:valueFrom="0"
+        android:valueTo="1"
+        android:valueType="floatType"
+        android:interpolator="@android:interpolator/overshoot" />
+
+    <objectAnimator
+        android:propertyName="scaleY"
+        android:duration="700"
+        android:valueFrom="0"
+        android:valueTo="1"
+        android:valueType="floatType"
+        android:interpolator="@android:interpolator/overshoot" />
+
+</set>

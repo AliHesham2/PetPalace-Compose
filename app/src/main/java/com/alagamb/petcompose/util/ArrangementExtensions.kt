@@ -25,16 +25,32 @@ fun Arrangement.adaptiveCentered(spacing: Dp): Arrangement.Horizontal = object :
         layoutDirection: LayoutDirection,
         outPositions: IntArray
     ) {
+        if (sizes.isEmpty()) return
         val spacingPx = spacing.roundToPx()
         val totalChildrenSize = sizes.sum() + spacingPx * (sizes.size - 1).coerceAtLeast(0)
-        var currentPosition = if (totalChildrenSize < totalSize) {
-            (totalSize - totalChildrenSize) / 2
+
+        if (layoutDirection == LayoutDirection.Rtl) {
+            val startOffset = if (totalChildrenSize < totalSize) {
+                totalSize - (totalSize - totalChildrenSize) / 2
+            } else {
+                totalSize
+            }
+            var currentPosition = startOffset
+            for (i in sizes.indices) {
+                currentPosition -= sizes[i]
+                outPositions[i] = currentPosition
+                currentPosition -= spacingPx
+            }
         } else {
-            0
-        }
-        for (i in sizes.indices) {
-            outPositions[i] = currentPosition
-            currentPosition += sizes[i] + spacingPx
+            var currentPosition = if (totalChildrenSize < totalSize) {
+                (totalSize - totalChildrenSize) / 2
+            } else {
+                0
+            }
+            for (i in sizes.indices) {
+                outPositions[i] = currentPosition
+                currentPosition += sizes[i] + spacingPx
+            }
         }
     }
 }

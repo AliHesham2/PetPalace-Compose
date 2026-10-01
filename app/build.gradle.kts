@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -5,6 +8,10 @@ plugins {
     alias (libs.plugins.kotlin.hilt)
     alias (libs.plugins.kotlin.ksp)
 }
+
+val keystoreProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) { keystoreProperties.load(FileInputStream(localPropertiesFile)) }
 
 android {
     namespace = "com.alagamb.petcompose"
@@ -20,6 +27,23 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        getByName("debug") {
+            val storeFilePath = keystoreProperties.getProperty("storeFile")
+            if (!storeFilePath.isNullOrEmpty()) { storeFile = file(storeFilePath) }
+            storePassword = keystoreProperties.getProperty("storePassword")
+            keyAlias = keystoreProperties.getProperty("keyAlias")
+            keyPassword = keystoreProperties.getProperty("keyPassword")
+        }
+        create("release") {
+            val storeFilePath = keystoreProperties.getProperty("storeFile")
+            if (!storeFilePath.isNullOrEmpty()) { storeFile = file(storeFilePath) }
+            storePassword = keystoreProperties.getProperty("storePassword")
+            keyAlias = keystoreProperties.getProperty("keyAlias")
+            keyPassword = keystoreProperties.getProperty("keyPassword")
+        }
     }
 
     buildTypes {
@@ -57,6 +81,9 @@ dependencies {
     
     //AppCompatLanguage
     implementation(libs.androidx.appcompat)
+
+    //Local Core SplashScreen Module (Open Source Fork)
+    implementation(project(":core-splashscreen"))
 
     //ICONS
     implementation(libs.androidx.compose.material.icons.extended)

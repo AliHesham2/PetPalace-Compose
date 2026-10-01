@@ -148,9 +148,8 @@ private fun ScaleIndicator(
         repeat(pageCount) { index ->
             val isSelected = activeIndex == index
 
-            // activeWidth is reused here as the active dot diameter
             val dotWidth by animateDpAsState(
-                targetValue   = if (isSelected) style.activeWidth else style.dotSize,
+                targetValue   = if (isSelected) (style.dotSize * 1.4f) else style.dotSize,
                 animationSpec = tween(durationMillis = 250),
                 label         = "scaleDot$index",
             )

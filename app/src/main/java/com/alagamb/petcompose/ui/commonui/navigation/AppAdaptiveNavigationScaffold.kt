@@ -21,6 +21,7 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowSizeClass
 
 // ─────────────────────────────────────────────────────────────────────────────
 // AppAdaptiveNavigationScaffold — Adaptive Navigation Component (Phone & Tablet/Fold)
@@ -66,7 +67,18 @@ fun AppAdaptiveNavigationScaffold(
     content: @Composable (PaddingValues) -> Unit
 ) {
     val adaptiveInfo = currentWindowAdaptiveInfo()
-    val layoutType = NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(adaptiveInfo)
+    val isCompactHeight = !adaptiveInfo.windowSizeClass.isHeightAtLeastBreakpoint(
+        WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+    )
+    val isMediumOrExpandedWidth = adaptiveInfo.windowSizeClass.isWidthAtLeastBreakpoint(
+        WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND
+    )
+    val isPhoneLandscape = isCompactHeight && isMediumOrExpandedWidth
+
+    val layoutType = when {
+        isPhoneLandscape -> NavigationSuiteType.NavigationRail
+        else -> NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(adaptiveInfo)
+    }
 
     Box(modifier = modifier.fillMaxSize()) {
         NavigationSuiteScaffoldLayout(
@@ -81,9 +93,11 @@ fun AppAdaptiveNavigationScaffold(
                                 Spacer(modifier = Modifier.weight(1f))
                             }
 
+                            val itemSpacing = if (isCompactHeight) 8.dp else 16.dp
+
                             items.forEachIndexed { index, item ->
                                 if (index > 0) {
-                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Spacer(modifier = Modifier.height(itemSpacing))
                                 }
                                 val isSelected = currentRoute == item.route
                                 NavigationRailItem(

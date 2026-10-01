@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+
 package com.alagamb.petcompose.ui.screens.addpet
 
 import android.widget.Toast
@@ -18,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imeNestedScroll
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -128,7 +131,8 @@ fun AddPetScreen(
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo()
 ) {
     val context = LocalContext.current
-    val scrollState = rememberScrollState()
+    val formScrollState = rememberScrollState()
+    val previewScrollState = rememberScrollState()
     val isWideScreen = windowAdaptiveInfo.windowSizeClass.isWidthAtLeastBreakpoint(
         WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND
     )
@@ -159,8 +163,7 @@ fun AddPetScreen(
                     Column(
                         modifier = Modifier
                             .weight(1.1f)
-                            .fillMaxHeight()
-                            .verticalScroll(scrollState),
+                            .then(AddPetModifiers.dualPaneFormColumn(formScrollState)),
                         verticalArrangement = Arrangement.spacedBy(20.dp)
                     ) {
                         AddPetFormFields(
@@ -170,11 +173,11 @@ fun AddPetScreen(
                         )
                     }
 
-                    // Right Column: Pinned Live Preview Card (Supporting Pane)
+                    // Right Column: Scrollable Live Preview Card (Supporting Pane)
                     Column(
                         modifier = Modifier
                             .weight(0.9f)
-                            .fillMaxHeight(),
+                            .then(AddPetModifiers.dualPanePreviewColumn(previewScrollState)),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         SectionHeader(
@@ -187,8 +190,7 @@ fun AddPetScreen(
             } else {
                 // Single-column layout for Phones
                 Column(
-                    modifier = AddPetModifiers.singlePaneContainer
-                        .verticalScroll(scrollState),
+                    modifier = AddPetModifiers.singlePaneContent(formScrollState),
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     AddPetLivePreviewCard(state = state)

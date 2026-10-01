@@ -22,6 +22,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -100,6 +102,7 @@ fun DashboardRoute(
     onSeeAllClick: () -> Unit = {},
     onPetClick: (petId: String) -> Unit = {},
     onAddPetClick: () -> Unit = {},
+    onSearchClick: () -> Unit = {},
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo()
 ) {
     DashboardScreen(
@@ -108,6 +111,7 @@ fun DashboardRoute(
         onSeeAllClick = onSeeAllClick,
         onPetClick = onPetClick,
         onAddPetClick = onAddPetClick,
+        onSearchClick = onSearchClick,
         windowAdaptiveInfo = windowAdaptiveInfo,
         modifier = modifier
     )
@@ -121,14 +125,9 @@ fun DashboardScreen(
     onSeeAllClick: () -> Unit = {},
     onPetClick: (petId: String) -> Unit = {},
     onAddPetClick: () -> Unit = {},
+    onSearchClick: () -> Unit = {},
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo()
 ) {
-    var isSearchOpen by remember { mutableStateOf(false) }
-    var searchQuery by remember { mutableStateOf("") }
-    val searchHistory = remember {
-        mutableStateListOf("Golden Retriever", "Kittens near me", "Playful Dogs", "Adopt a Bird")
-    }
-
     val roomAnnouncements = viewModel?.announcements?.collectAsStateWithLifecycle()?.value.orEmpty()
     val roomCategories = viewModel?.categories?.collectAsStateWithLifecycle()?.value.orEmpty()
     val roomFeaturedPets = viewModel?.featuredPets?.collectAsStateWithLifecycle()?.value.orEmpty()
@@ -138,17 +137,15 @@ fun DashboardScreen(
     val featuredPetsList = if (roomFeaturedPets.isNotEmpty()) roomFeaturedPets else DashboardMockData.featuredPets
     val pagerState = rememberPagerState(pageCount = { announcements.size })
 
-    // Handle system back button when search is open
-    BackHandler(enabled = isSearchOpen) {
-        isSearchOpen = false
-        searchQuery = ""
-    }
-
     val columnCount = when {
         windowAdaptiveInfo.windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) -> 4
         windowAdaptiveInfo.windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> 3
         else -> 2
     }
+
+    val isCompactHeight = !windowAdaptiveInfo.windowSizeClass.isHeightAtLeastBreakpoint(
+        WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+    )
 
     Box(modifier = modifier.then(DashboardModifiers.root)) {
 
@@ -162,19 +159,24 @@ fun DashboardScreen(
         ) {
             // 1. Search Bar (pill-shaped, centered, NO filter, click to animate full screen)
             item(span = { GridItemSpan(maxLineSpan) }) {
-                DashboardSearchTriggerBar(
-                    onClick = { isSearchOpen = true },
-                    modifier = DashboardModifiers.itemSpanFull
-                )
+                Box(
+                    modifier = DashboardModifiers.itemSpanFull,
+                    contentAlignment = Alignment.Center
+                ) {
+                    DashboardSearchTriggerBar(
+                        onClick = onSearchClick,
+                        modifier = DashboardModifiers.searchTriggerContainer
+                    )
+                }
             }
 
             // 2. Announcements Carousel (Using AppHorizontalPager from commonUI)
             item(span = { GridItemSpan(maxLineSpan) }) {
                 AppHorizontalPager(
                     state = pagerState,
-                    style = AppPagerStyles.scale(),
+                    style = AppPagerStyles.worm(),
                     showIndicator = true,
-                    indicatorPadding = 10.dp,
+                    indicatorPadding = if (isCompactHeight) 6.dp else 10.dp,
                     pageSize = rememberAdaptivePageSize(windowAdaptiveInfo, expandedVisiblePages = 3f),
                     contentPadding = PaddingValues(0.dp),
                     pageSpacing = 16.dp,
@@ -184,6 +186,7 @@ fun DashboardScreen(
                     val announcement = announcements[page]
                     AnnouncementCard(
                         announcement = announcement,
+                        isCompactHeight = isCompactHeight,
                         modifier = DashboardModifiers.itemSpanFull
                     )
                 }
@@ -218,51 +221,6 @@ fun DashboardScreen(
                     modifier = DashboardModifiers.itemSpanFull
                 )
             }
-        }
-
-        // Floating Action Button to Add New Pet
-        AnimatedVisibility(
-            visible = !isSearchOpen,
-            enter = fadeIn(),
-            exit = fadeOut(),
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .then(DashboardModifiers.fab)
-        ) {
-            AppExtendedFab(
-                text = stringResource(R.string.dashboard_add_pet),
-                icon = Icons.Default.Add,
-                onClick = onAddPetClick,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            )
-        }
-
-        // Full Screen Search Overlay with Smooth Enter/Exit Animation
-        AnimatedVisibility(
-            visible = isSearchOpen,
-            enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
-            exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top)
-        ) {
-            FullScreenSearchOverlay(
-                query = searchQuery,
-                onQueryChange = { searchQuery = it },
-                onClose = {
-                    isSearchOpen = false
-                    searchQuery = ""
-                },
-                historyItems = searchHistory,
-                onRemoveHistory = { searchHistory.remove(it) },
-                onClearAllHistory = { searchHistory.clear() },
-                pets = featuredPetsList,
-                onPetClick = {
-                    if (searchQuery.isNotBlank() && !searchHistory.contains(searchQuery.trim())) {
-                        searchHistory.add(0, searchQuery.trim())
-                    }
-                    isSearchOpen = false
-                    onPetClick(it)
-                }
-            )
         }
     }
 }
@@ -342,6 +300,8 @@ fun FullScreenSearchOverlay(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
+                .navigationBarsPadding()
+                .imePadding()
         ) {
             // Search Header
             Row(
@@ -490,24 +450,19 @@ fun FullScreenSearchOverlay(
                                         .padding(12.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    // Mini pet avatar
-                                    AppSurface(
-                                        shape = CircleShape,
+                                    // Mini pet avatar with gradient background and icon
+                                    Box(
                                         modifier = Modifier
                                             .size(48.dp)
-                                            .background(pet.cardGradient, CircleShape)
+                                            .background(pet.cardGradient, CircleShape),
+                                        contentAlignment = Alignment.Center
                                     ) {
-                                        Box(
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Pets,
-                                                contentDescription = pet.name,
-                                                tint = AppColors.White.copy(alpha = 0.8f),
-                                                modifier = Modifier.size(24.dp)
-                                            )
-                                        }
+                                        Icon(
+                                            imageVector = Icons.Default.Pets,
+                                            contentDescription = pet.name,
+                                            tint = AppColors.White,
+                                            modifier = Modifier.size(24.dp)
+                                        )
                                     }
 
                                     Spacer(modifier = Modifier.width(14.dp))
@@ -563,24 +518,36 @@ fun FullScreenSearchOverlay(
 fun AnnouncementCard(
     announcement: AnnouncementItem,
     modifier: Modifier = Modifier,
+    isCompactHeight: Boolean = false,
     onClick: () -> Unit = {}
 ) {
+    val pawIconSize = if (isCompactHeight) 76.dp else 96.dp
+
     AppElevatedCard(
-        modifier = modifier.then(DashboardModifiers.announcementCard),
+        modifier = modifier.then(DashboardModifiers.announcementCardAdaptive(isCompactHeight)),
         shape = AppShape.XLarge,
         onClick = onClick
     ) {
         Box(
-            modifier = DashboardModifiers.announcementContent
+            modifier = Modifier
                 .background(announcement.backgroundBrush)
+                .then(DashboardModifiers.announcementContentAdaptive(isCompactHeight))
         ) {
-            Column(
+            // Decorative subtle paw watermark in the background
+            Icon(
+                imageVector = Icons.Default.Pets,
+                contentDescription = null,
+                tint = AppColors.White.copy(alpha = 0.12f),
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(end = 64.dp),
+                    .size(pawIconSize)
+                    .align(Alignment.BottomEnd)
+            )
+
+            Column(
+                modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Column {
+                Column(modifier = DashboardModifiers.itemSpanFull) {
                     AppSurface(
                         shape = AppShape.Pill,
                         color = AppColors.White.copy(alpha = 0.25f)
@@ -590,24 +557,24 @@ fun AnnouncementCard(
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
                             color = AppColors.White,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                            modifier = DashboardModifiers.announcementTagPadding(isCompactHeight)
                         )
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(if (isCompactHeight) 4.dp else 8.dp))
                     Text(
                         text = announcement.title,
-                        style = MaterialTheme.typography.titleMedium,
+                        style = if (isCompactHeight) MaterialTheme.typography.titleSmall else MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = AppColors.White,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(if (isCompactHeight) 2.dp else 4.dp))
                     Text(
                         text = announcement.description,
                         style = MaterialTheme.typography.bodySmall,
                         color = AppColors.White.copy(alpha = 0.9f),
-                        maxLines = 2,
+                        maxLines = if (isCompactHeight) 1 else 2,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
@@ -622,21 +589,10 @@ fun AnnouncementCard(
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
                         color = AppColors.Dark.Background,
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
+                        modifier = DashboardModifiers.announcementCtaPadding(isCompactHeight)
                     )
                 }
             }
-
-            // Decorative paw background
-            Icon(
-                imageVector = Icons.Default.Pets,
-                contentDescription = null,
-                tint = AppColors.White.copy(alpha = 0.18f),
-                modifier = Modifier
-                    .size(96.dp)
-                    .align(Alignment.BottomEnd)
-                    .offset(x = 12.dp, y = 12.dp)
-            )
         }
     }
 }

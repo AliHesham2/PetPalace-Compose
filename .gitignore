@@ -11,3 +11,15 @@ build/
 .cxx
 local.properties
 .kotlin/
+
+# Built binaries & release packages
+*.apk
+*.aab
+/app/release/
+release/
+
+# Signing keys & keystores
+/keystore/
+keystore/
+*.jks
+*.keystore

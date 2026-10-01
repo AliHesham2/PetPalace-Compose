@@ -19,7 +19,10 @@ import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.window.core.layout.WindowSizeClass
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
@@ -33,6 +36,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -53,6 +57,8 @@ import com.alagamb.petcompose.ui.commonui.textfield.AppPasswordTextField
 import com.alagamb.petcompose.ui.commonui.textfield.AppTextFieldStyle
 import com.alagamb.petcompose.ui.commonui.textfield.AppTextFieldStyles
 import com.alagamb.petcompose.ui.theme.PetComposeTheme
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.runtime.getValue
 import com.alagamb.petcompose.util.LocalSnackbarHostState
 
 @Composable
@@ -61,15 +67,15 @@ fun RegisterRoute(
     modifier: Modifier = Modifier,
     onNavigateToLogin: () -> Unit = onBackClick,
     onNavigateToDashboard: () -> Unit = {},
-    viewModel: RegistrationViewModel? = null,
+    viewModel: RegistrationViewModel = hiltViewModel(),
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo()
 ) {
-    val state = viewModel?.uiState?.collectAsStateWithLifecycle()?.value ?: RegistrationUiState()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackBarHostState = LocalSnackbarHostState.current
     val context = LocalContext.current
 
     LaunchedEffect(viewModel) {
-        viewModel?.sideEffect?.collect { effect ->
+        viewModel.sideEffect.collect { effect ->
             when (effect) {
                 is RegistrationSideEffect.NavigateToDashboard -> onNavigateToDashboard()
                 is RegistrationSideEffect.NavigateToLogin -> onNavigateToLogin()
@@ -87,7 +93,7 @@ fun RegisterRoute(
     RegisterScreen(
         state = state,
         onBackClick = onBackClick,
-        onRegisterClick = { viewModel?.processIntent(RegistrationIntent.SubmitRegister) },
+        onRegisterClick = { viewModel.processIntent(RegistrationIntent.SubmitRegister) },
         onNavigateToLogin = onNavigateToLogin,
         modifier = modifier,
         windowAdaptiveInfo = windowAdaptiveInfo
@@ -207,7 +213,11 @@ fun RegisterScreen(
                 hint = stringResource(R.string.register_name_hint),
                 isError = usernameIsError,
                 errorMessage = usernameErrorMsg,
-                style = usernameStyle
+                style = usernameStyle,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -220,7 +230,11 @@ fun RegisterScreen(
                 hint = stringResource(R.string.auth_email_hint),
                 isError = emailIsError,
                 errorMessage = emailErrorMsg,
-                style = emailStyle
+                style = emailStyle,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next
+                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -233,7 +247,11 @@ fun RegisterScreen(
                 hint = stringResource(R.string.auth_password_hint),
                 isError = passwordIsError,
                 errorMessage = passwordErrorMsg,
-                style = passwordStyle
+                style = passwordStyle,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                )
             )
 
             // Password length requirement note
@@ -320,6 +338,7 @@ private fun RegisterInputField(
     isError: Boolean,
     errorMessage: String?,
     style: AppTextFieldStyle,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -339,17 +358,19 @@ private fun RegisterInputField(
                 isError = isError,
                 errorMessage = errorMessage,
                 style = style,
+                keyboardOptions = keyboardOptions
             )
         } else {
             AppPasswordTextField(
                 modifier = Modifier.fillMaxWidth(),
                 state = state,
                 leadingIcon = icon,
-                label = hint,
+                placeholder = hint,
                 outlined = true,
                 isError = isError,
                 errorMessage = errorMessage,
                 style = style,
+                keyboardOptions = keyboardOptions
             )
         }
     }

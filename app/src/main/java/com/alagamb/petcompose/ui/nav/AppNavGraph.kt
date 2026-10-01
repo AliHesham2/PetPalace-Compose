@@ -18,9 +18,7 @@ import com.alagamb.petcompose.ui.screens.products.productlist.ProductListRoute
 import com.alagamb.petcompose.ui.screens.registration.LandRoute
 import com.alagamb.petcompose.ui.screens.registration.LoginRoute
 import com.alagamb.petcompose.ui.screens.registration.RegisterRoute
-import com.alagamb.petcompose.ui.screens.registration.RegistrationViewModel
 import com.alagamb.petcompose.ui.screens.requests.RequestsRoute
-import com.alagamb.petcompose.util.sharedViewModel
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -29,6 +27,7 @@ fun AppNavGraph(
     navController  : NavHostController = rememberNavController(),
     coroutineScope : CoroutineScope    = rememberCoroutineScope(),
     startDestination: String           = AppRoute.AUTH_GRAPH,
+    onToggleLanguage: () -> Unit       = {},
     navActions     : AppNavigation     = remember(navController) { AppNavigation(navController) }
 ){
 
@@ -37,40 +36,37 @@ fun AppNavGraph(
         startDestination = startDestination,
         modifier         = modifier,
     ){
-        // ── Auth Sub-Graph (Shares RegistrationViewModel) ─────
+        // ── Auth Sub-Graph ─────
         navigation(
             startDestination = AppRoute.LAND_ROUTE,
             route            = AppRoute.AUTH_GRAPH,
         ){
-            composable(route = AppRoute.LAND_ROUTE){ backStackEntry ->
+            composable(route = AppRoute.LAND_ROUTE){
                 LandRoute(
                     onClick = { isLogin ->
                         if (isLogin) navActions.navToLoginScreen()
                         else navActions.navToRegisterScreen()
                     },
-                    modifier = modifier
+                    onToggleLanguage = onToggleLanguage,
+                    modifier = Modifier
                 )
             }
 
-            composable(route = AppRoute.LOGIN_ROUTE){ backStackEntry ->
-                val authViewModel: RegistrationViewModel = backStackEntry.sharedViewModel(navController, AppRoute.AUTH_GRAPH)
+            composable(route = AppRoute.LOGIN_ROUTE){
                 LoginRoute(
                     onBackClick = { navController.popBackStack() },
                     onNavigateToDashboard = { navActions.navToMain() },
                     onNavigateToRegister = { navActions.navToRegisterScreen() },
-                    modifier = modifier,
-                    viewModel = authViewModel
+                    modifier = Modifier
                 )
             }
 
-            composable(route = AppRoute.REGISTER_ROUTE){ backStackEntry ->
-                val authViewModel: RegistrationViewModel = backStackEntry.sharedViewModel(navController, AppRoute.AUTH_GRAPH)
+            composable(route = AppRoute.REGISTER_ROUTE){
                 RegisterRoute(
                     onBackClick = { navController.popBackStack() },
                     onNavigateToDashboard = { navActions.navToMain() },
                     onNavigateToLogin = { navActions.navToLoginScreen() },
-                    modifier = modifier,
-                    viewModel = authViewModel
+                    modifier = Modifier
                 )
             }
         }
@@ -82,7 +78,7 @@ fun AppNavGraph(
                 onNavigateToProductList = { title -> navActions.navToProductList(title) },
                 onNavigateToProductDetails = { productId -> navActions.navToProductDetails(productId) },
                 onNavigateToAddPet = { navActions.navToAddPet() },
-                modifier = modifier
+                modifier = Modifier
             )
         }
 
@@ -90,7 +86,7 @@ fun AppNavGraph(
         composable(route = AppRoute.REQUESTS_ROUTE) {
             RequestsRoute(
                 onBackClick = { navController.popBackStack() },
-                modifier = modifier
+                modifier = Modifier
             )
         }
 
@@ -103,7 +99,7 @@ fun AppNavGraph(
         ) {
             ProductListRoute(
                 onBackClick = { navController.popBackStack() },
-                modifier = modifier
+                modifier = Modifier
             )
         }
 
@@ -116,7 +112,7 @@ fun AppNavGraph(
         ) {
             ProductDetailsRoute(
                 onBackClick = { navController.popBackStack() },
-                modifier = modifier
+                modifier = Modifier
             )
         }
 
@@ -124,7 +120,7 @@ fun AppNavGraph(
         composable(route = AppRoute.ADD_PET_ROUTE) {
             AddPetRoute(
                 onBackClick = { navController.popBackStack() },
-                modifier = modifier
+                modifier = Modifier
             )
         }
     }

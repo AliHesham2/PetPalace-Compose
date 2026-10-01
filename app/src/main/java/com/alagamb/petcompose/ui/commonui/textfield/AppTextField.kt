@@ -258,11 +258,16 @@ fun AppOutlinedTextField(
 fun AppPasswordTextField(
     state        : TextFieldState   = rememberTextFieldState(),
     modifier     : Modifier         = Modifier,
-    label        : String           = "Password",
-    leadingIcon         : ImageVector?= null,
+    label        : String?          = null,
+    placeholder  : String?          = null,
+    leadingIcon  : ImageVector?     = null,
     outlined     : Boolean          = false,
     isError      : Boolean          = false,
     errorMessage : String?          = null,
+    keyboardOptions: KeyboardOptions = KeyboardOptions(
+        keyboardType = KeyboardType.Password,
+        imeAction    = ImeAction.Done,
+    ),
     style        : AppTextFieldStyle = AppTextFieldStyles.default(),
 ) {
     // Toggle visibility state — false = hidden (dots), true = visible
@@ -286,11 +291,9 @@ fun AppPasswordTextField(
             shape               = style.shape,
             isError             = isError,
             textObfuscationMode = obfuscationMode,
-            keyboardOptions     = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
-                imeAction    = ImeAction.Done,
-            ),
-            label        = { Text(label, style = MaterialTheme.typography.bodyMedium) },
+            keyboardOptions     = keyboardOptions,
+            label        = if (label != null) { { Text(label, style = MaterialTheme.typography.bodyMedium) } } else null,
+            placeholder  = placeholder?.let { { Text(it, style = MaterialTheme.typography.bodyMedium) } },
             leadingIcon = leadingIcon?.let {
                 { Icon(it, contentDescription = null) }
             },
@@ -311,11 +314,9 @@ fun AppPasswordTextField(
             shape               = style.shape,
             isError             = isError,
             textObfuscationMode = obfuscationMode,
-            keyboardOptions     = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
-                imeAction    = ImeAction.Done,
-            ),
-            label        = { Text(label, style = MaterialTheme.typography.bodyMedium) },
+            keyboardOptions     = keyboardOptions,
+            label        = if (label != null) { { Text(label, style = MaterialTheme.typography.bodyMedium) } } else null,
+            placeholder  = placeholder?.let { { Text(it, style = MaterialTheme.typography.bodyMedium) } },
             leadingIcon = leadingIcon?.let {
                 { Icon(it, contentDescription = null) }
             },

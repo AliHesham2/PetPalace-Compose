@@ -48,17 +48,13 @@ class AppNavigation(private val navController: NavHostController) {
 
     fun navToLoginScreen() {
         navController.navigate(AppRoute.LOGIN_ROUTE) {
-            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
             launchSingleTop = true
-            restoreState = true
         }
     }
 
     fun navToRegisterScreen() {
         navController.navigate(AppRoute.REGISTER_ROUTE) {
-            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
             launchSingleTop = true
-            restoreState = true
         }
     }
 

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.PetCompose" parent="Theme.AppCompat.DayNight.NoActionBar" />
+
+    <!-- Dark mode system splash: matches AppColors.Dark.Background (#0F0F0F) -->
+    <style name="Theme.PetCompose.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#0F0F0F</item>
+        <!-- The system only shows the background, the logo comes in with its entry animation -->
+        <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
+        <item name="splashScreenIntroAnimatedIcon">@drawable/ic_splash_animated</item>
+        <item name="splashScreenBrandingLabel">POWERED BY</item>
+        <item name="splashScreenBrandingName">Ali Hesham</item>
+        <item name="postSplashScreenTheme">@style/Theme.PetCompose</item>
+    </style>
+
+</resources>

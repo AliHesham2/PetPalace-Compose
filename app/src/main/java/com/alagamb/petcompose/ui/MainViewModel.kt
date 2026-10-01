@@ -9,30 +9,57 @@ import com.alagamb.petcompose.data.preferences.ThemeMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+sealed interface MainActivityUiState {
+    data object Loading : MainActivityUiState
+    data class Success(
+        val startDestination: String,
+        val themeMode: ThemeMode,
+        val language: String
+    ) : MainActivityUiState
+}
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     userRepository: UserRepository,
-    appPreferencesManager: AppPreferencesManager
+    private val appPreferencesManager: AppPreferencesManager
 ) : ViewModel() {
 
-    val themeMode: StateFlow<ThemeMode> = appPreferencesManager.themeModeFlow
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = ThemeMode.SYSTEM
+    val uiState: StateFlow<MainActivityUiState> = combine(
+        userRepository.currentUser,
+        appPreferencesManager.themeModeFlow,
+        appPreferencesManager.appLanguageFlow
+    ) { user, themeMode, language ->
+        val destination = if (user != null) AppRoute.MAIN_ROUTE else AppRoute.AUTH_GRAPH
+        MainActivityUiState.Success(
+            startDestination = destination,
+            themeMode = themeMode,
+            language = language
         )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = MainActivityUiState.Loading
+    )
 
-    val startDestination: StateFlow<String?> = userRepository.currentUser
-        .map { user ->
-            if (user != null) AppRoute.MAIN_ROUTE else AppRoute.AUTH_GRAPH
+    fun toggleLanguage() {
+        viewModelScope.launch {
+            val currentLanguage = when (val state = uiState.value) {
+                is MainActivityUiState.Success -> state.language
+                is MainActivityUiState.Loading -> appPreferencesManager.getInitialLanguage()
+            }
+            val nextLanguage = if (currentLanguage.startsWith("ar", ignoreCase = true)) "en" else "ar"
+            setAppLanguage(nextLanguage)
         }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = null
-        )
+    }
+
+    fun setAppLanguage(languageCode: String) {
+        viewModelScope.launch {
+            appPreferencesManager.setAppLanguage(languageCode)
+        }
+    }
 }
