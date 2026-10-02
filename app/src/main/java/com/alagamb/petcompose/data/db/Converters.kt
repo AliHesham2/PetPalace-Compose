@@ -1,13 +1,20 @@
 package com.alagamb.petcompose.data.db
 
 import androidx.room.TypeConverter
-import com.google.gson.Gson
-/** Used in DB instance class **/
 class Converters {
 
     @TypeConverter
-    fun listToJson(value: List<Int>?): String? = Gson().toJson(value)
+    fun listToJson(value: List<Int>?): String? =
+        value?.joinToString(separator = ",", prefix = "[", postfix = "]")
 
     @TypeConverter
-    fun jsonToList(value: String) = Gson().fromJson(value, Array<Int>::class.java).toList()
+    fun jsonToList(value: String): List<Int> {
+        val json = value.trim()
+        if (json == "null") return emptyList()
+        return json.removeSurrounding("[", "]")
+            .split(',')
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .map { it.toInt() }
+    }
 }

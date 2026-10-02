@@ -47,10 +47,16 @@ android {
     }
 
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("debug")
+        }
         release {
+            // Code + resource optimization with the default Android keep rules.
+            // Project keep rules live in src/main/keepRules/*.keep
             optimization {
-                enable = false
+                enable = true
             }
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
@@ -102,9 +108,6 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.paging)
     ksp(libs.androidx.room.compiler)
-
-    //GSON
-    implementation(libs.gson)
 
     //DataStore
     implementation(libs.androidx.datastore.preferences)

@@ -2,7 +2,6 @@ package com.alagamb.petcompose.util
 
 import androidx.annotation.StringRes
 import com.alagamb.petcompose.R
-import com.google.gson.JsonParseException
 import java.io.IOException
 
 enum class ErrorType {
@@ -44,22 +43,12 @@ sealed class ResultCallBack<out T : Any> {
     }
 }
 
-/**
- * Maps exceptions dynamically into standardized ResultCallBack.Error
- * using resource strings from strings.xml
- */
 fun Exception.toFailure(): ResultCallBack.Error {
     return when (this) {
         is IOException -> ResultCallBack.Error(
             type = ErrorType.NETWORK,
             message = "Check your internet connection.",
             messageRes = R.string.error_network,
-            throwable = this
-        )
-        is JsonParseException -> ResultCallBack.Error(
-            type = ErrorType.SERVER,
-            message = "Data does not match",
-            messageRes = R.string.error_unknown,
             throwable = this
         )
         else -> ResultCallBack.Error(
