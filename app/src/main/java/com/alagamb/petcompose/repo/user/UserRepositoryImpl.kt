@@ -1,16 +1,22 @@
 package com.alagamb.petcompose.repo.user
 
 import com.alagamb.petcompose.R
+import com.alagamb.petcompose.data.db.dao.pet.PetDao
+import com.alagamb.petcompose.data.db.dao.request.RequestDao
 import com.alagamb.petcompose.data.db.dao.user.UserDao
 import com.alagamb.petcompose.data.db.table.user.UserTable
 import com.alagamb.petcompose.data.model.user.User
 import com.alagamb.petcompose.data.model.user.toDomain
+import com.alagamb.petcompose.data.security.PasswordHasher
 import com.alagamb.petcompose.util.ErrorType
 import com.alagamb.petcompose.util.ResultCallBack
 import com.alagamb.petcompose.util.toFailure
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import com.alagamb.petcompose.data.preferences.UserSessionManager
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -18,6 +24,8 @@ import javax.inject.Singleton
 @Singleton
 class UserRepositoryImpl @Inject constructor(
     private val userDao: UserDao,
+    private val petDao: PetDao,
+    private val requestDao: RequestDao,
     private val userSessionManager: UserSessionManager
 ) : UserRepository {
 
@@ -40,11 +48,11 @@ class UserRepositoryImpl @Inject constructor(
                 return@flow
             }
 
-            // Insert new user into database
+            // Insert new user into database, the password is never stored as plain text
             val userEntity = UserTable(
                 username = username,
                 email = email,
-                password = password
+                password = withContext(Dispatchers.Default) { PasswordHasher.hash(password) }
             )
             val generatedId = userDao.insertUser(userEntity)
             val user = User(
@@ -75,7 +83,7 @@ class UserRepositoryImpl @Inject constructor(
                         )
                     )
                 }
-                user.password != password -> {
+                !isPasswordCorrect(user, password) -> {
                     emit(
                         ResultCallBack.Error(
                             type = ErrorType.SERVER,
@@ -105,5 +113,27 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun logout() {
         userSessionManager.clearSession()
+    }
+
+    override suspend fun deleteAccount() {
+        val user = userSessionManager.userSessionFlow.first() ?: return
+        // Requests, favorites and added pets are not tied to an account in the database:
+        // they all belong to whoever uses the app on this device.
+        requestDao.clearAllRequests()
+        petDao.clearFavorites()
+        petDao.deleteUserAddedPets()
+        userDao.deleteUserByEmail(user.email)
+        userSessionManager.clearSession()
+    }
+
+    private suspend fun isPasswordCorrect(user: UserTable, password: String): Boolean {
+        if (PasswordHasher.isHashed(user.password)) {
+            return withContext(Dispatchers.Default) { PasswordHasher.verify(password, user.password) }
+        }
+        // Account created before passwords were hashed: upgrade it on its first successful login
+        if (user.password != password) return false
+        val hashed = withContext(Dispatchers.Default) { PasswordHasher.hash(password) }
+        userDao.updatePassword(user.id, hashed)
+        return true
     }
 }

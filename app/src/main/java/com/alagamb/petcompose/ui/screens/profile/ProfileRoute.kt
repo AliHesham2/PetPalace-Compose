@@ -43,6 +43,7 @@ import androidx.compose.material.icons.filled.BrightnessAuto
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
@@ -98,6 +99,7 @@ fun ProfileRoute(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var showLogoutDialog by remember { mutableStateOf(false) }
+    var showDeleteAccountDialog by remember { mutableStateOf(false) }
     var notificationsEnabled by remember { mutableStateOf(true) }
 
     ProfileScreen(
@@ -108,54 +110,83 @@ fun ProfileRoute(
         onLanguageChange = { viewModel.setLanguage(it) },
         onNavigateToRequests = onNavigateToRequests,
         onLogoutClick = { showLogoutDialog = true },
+        onDeleteAccountClick = { showDeleteAccountDialog = true },
         windowAdaptiveInfo = windowAdaptiveInfo,
         modifier = modifier
     )
 
     if (showLogoutDialog) {
-        AlertDialog(
-            onDismissRequest = { showLogoutDialog = false },
-            title = {
-                Text(
-                    text = stringResource(R.string.profile_logout_confirm_title),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
+        ProfileConfirmDialog(
+            title = stringResource(R.string.profile_logout_confirm_title),
+            message = stringResource(R.string.profile_logout_confirm_msg),
+            confirmText = stringResource(R.string.action_confirm),
+            onConfirm = {
+                showLogoutDialog = false
+                viewModel.logout()
             },
-            text = {
-                Text(
-                    text = stringResource(R.string.profile_logout_confirm_msg),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showLogoutDialog = false
-                        viewModel.logout()
-                    }
-                ) {
-                    Text(
-                        text = stringResource(R.string.action_confirm),
-                        color = MaterialTheme.colorScheme.error,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showLogoutDialog = false }) {
-                    Text(
-                        text = stringResource(R.string.action_cancel),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            },
-            shape = AppShape.Large,
-            containerColor = MaterialTheme.colorScheme.surface,
-            tonalElevation = 6.dp
+            onDismiss = { showLogoutDialog = false }
         )
     }
+
+    if (showDeleteAccountDialog) {
+        ProfileConfirmDialog(
+            title = stringResource(R.string.profile_delete_confirm_title),
+            message = stringResource(R.string.profile_delete_confirm_msg),
+            confirmText = stringResource(R.string.action_delete),
+            onConfirm = {
+                showDeleteAccountDialog = false
+                viewModel.deleteAccount()
+            },
+            onDismiss = { showDeleteAccountDialog = false }
+        )
+    }
+}
+
+@Composable
+private fun ProfileConfirmDialog(
+    title: String,
+    message: String,
+    confirmText: String,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(
+                    text = confirmText,
+                    color = MaterialTheme.colorScheme.error,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = stringResource(R.string.action_cancel),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        },
+        shape = AppShape.Large,
+        containerColor = MaterialTheme.colorScheme.surface,
+        tonalElevation = 6.dp
+    )
 }
 
 @Composable
@@ -167,6 +198,7 @@ fun ProfileScreen(
     onLanguageChange: (String) -> Unit,
     onNavigateToRequests: () -> Unit,
     onLogoutClick: () -> Unit,
+    onDeleteAccountClick: () -> Unit,
     modifier: Modifier = Modifier,
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo()
 ) {
@@ -305,6 +337,19 @@ fun ProfileScreen(
                         subtitle = null,
                         isDestructive = true,
                         onClick = onLogoutClick
+                    )
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 10.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)
+                    )
+
+                    ProfileSettingRow(
+                        icon = Icons.Default.DeleteForever,
+                        title = stringResource(R.string.profile_action_delete_account),
+                        subtitle = stringResource(R.string.profile_action_delete_account_desc),
+                        isDestructive = true,
+                        onClick = onDeleteAccountClick
                     )
                 }
             }
@@ -984,7 +1029,8 @@ fun ProfileScreenPreview() {
             onThemeModeChange = {},
             onLanguageChange = {},
             onNavigateToRequests = {},
-            onLogoutClick = {}
+            onLogoutClick = {},
+            onDeleteAccountClick = {}
         )
     }
 }
@@ -1012,7 +1058,8 @@ fun ProfileScreenFoldablePreview() {
             onThemeModeChange = {},
             onLanguageChange = {},
             onNavigateToRequests = {},
-            onLogoutClick = {}
+            onLogoutClick = {},
+            onDeleteAccountClick = {}
         )
     }
 }
@@ -1040,7 +1087,8 @@ fun ProfileScreenTabletPreview() {
             onThemeModeChange = {},
             onLanguageChange = {},
             onNavigateToRequests = {},
-            onLogoutClick = {}
+            onLogoutClick = {},
+            onDeleteAccountClick = {}
         )
     }
 }

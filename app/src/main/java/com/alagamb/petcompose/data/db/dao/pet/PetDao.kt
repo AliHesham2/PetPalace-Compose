@@ -76,6 +76,16 @@ interface PetDao {
     @Query("UPDATE pet_table SET is_favorite = :isFavorite WHERE id = :id")
     suspend fun updateFavoriteStatus(id: String, isFavorite: Boolean)
 
+    @Query("UPDATE pet_table SET is_favorite = 0")
+    suspend fun clearFavorites()
+
+    /**
+     * Pets added from the Add Pet screen get a timestamp id (`pet_1759...`), while the seeded
+     * ones are named (`pet_dog_1`).
+     */
+    @Query("DELETE FROM pet_table WHERE id GLOB 'pet_[0-9]*'")
+    suspend fun deleteUserAddedPets()
+
     @Query("SELECT DISTINCT tag FROM pet_table WHERE tag IS NOT NULL AND tag != '' ORDER BY tag ASC")
     fun getAllTags(): Flow<List<String>>
 

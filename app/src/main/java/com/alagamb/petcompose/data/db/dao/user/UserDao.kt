@@ -20,4 +20,10 @@ interface UserDao {
 
     @Query("SELECT * FROM user_table")
     fun getAllUsers(): Flow<List<UserTable>>
+
+    @Query("UPDATE user_table SET password = :password WHERE id = :id")
+    suspend fun updatePassword(id: Long, password: String)
+
+    @Query("DELETE FROM user_table WHERE email = :email")
+    suspend fun deleteUserByEmail(email: String)
 }

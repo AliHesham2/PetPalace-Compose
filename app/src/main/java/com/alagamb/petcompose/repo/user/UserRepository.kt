@@ -11,4 +11,7 @@ interface UserRepository {
     fun getUserByEmail(email: String): Flow<User?>
     fun getAllUsers(): Flow<List<User>>
     suspend fun logout()
+
+    /** Deletes the signed-in account and everything it created on this device. */
+    suspend fun deleteAccount()
 }

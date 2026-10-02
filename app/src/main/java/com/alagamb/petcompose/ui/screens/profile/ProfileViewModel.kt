@@ -69,4 +69,10 @@ class ProfileViewModel @Inject constructor(
             userRepository.logout()
         }
     }
+
+    fun deleteAccount() {
+        viewModelScope.launch {
+            userRepository.deleteAccount()
+        }
+    }
 }
